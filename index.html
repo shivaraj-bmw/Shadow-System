@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE SYSTEM // Hunter Log</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Great+Vibes&display=swap');
+
+:root{
+  --bg:#05070d;
+  --panel:#0b1019;
+  --panel2:#0e1420;
+  --accent-rgb:77,232,255;
+  --gold-rgb:255,184,77;
+  --line:rgba(var(--accent-rgb),0.22);
+  --line-soft:rgba(var(--accent-rgb),0.10);
+  --blue:#4de8ff;
+  --blue-dim:#2a7f94;
+  --violet:#8b6bff;
+  --gold:#ffb84d;
+  --red:#ff5468;
+  --green:#48e08a;
+  --text:#c9d3e3;
+  --dim:#5c6785;
+  --mono:'JetBrains Mono',monospace;
+  --display:'Orbitron',sans-serif;
+  --ui:'Rajdhani',sans-serif;
+  --body:'Inter',sans-serif;
+  --sign:'Great Vibes',cursive;
+}
+/* ---------- Theme variants ----------
+   Switching data-theme on <html> recolors the whole UI —
+   including the license/certificate — since every accent
+   color below is driven by these variables. */
+html[data-theme="red"]{
+  --accent-rgb:255,84,104;
+  --blue:#ff5468;
+  --blue-dim:#8a2c38;
+  --gold-rgb:255,138,92;
+  --gold:#ff8a5c;
+}
+html[data-theme="green"]{
+  --accent-rgb:72,224,138;
+  --blue:#48e08a;
+  --blue-dim:#1f7a4c;
+  --gold-rgb:201,232,122;
+  --gold:#c9e87a;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  position:relative;
+  background:
+    radial-gradient(ellipse 1000px 560px at 50% -8%, rgba(var(--accent-rgb),0.16), transparent 62%),
+    radial-gradient(circle at 12% 88%, rgba(var(--accent-rgb),0.07), transparent 42%),
+    radial-gradient(circle at 88% 15%, rgba(139,107,255,0.08), transparent 40%),
+    radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1.4px) 0 0/38px 38px,
+    var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Faint rotating summon-circle watermark, recolors with the active theme */
+body::before{
+  content:"";
+  position:fixed;
+  top:50%;left:50%;
+  width:min(900px,140vw);height:min(900px,140vw);
+  transform:translate(-50%,-50%);
+  background-color:rgba(var(--accent-rgb),0.5);
+  -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g fill="none" stroke="white" stroke-width="0.6"><circle cx="100" cy="100" r="94"/><circle cx="100" cy="100" r="80"/><circle cx="100" cy="100" r="66"/><path d="M100 6 L100 194 M6 100 L194 100"/><path d="M100 20 L112 88 L180 100 L112 112 L100 180 L88 112 L20 100 L88 88 Z"/><circle cx="100" cy="100" r="4" fill="white" stroke="none"/></g></svg>');
+  mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g fill="none" stroke="white" stroke-width="0.6"><circle cx="100" cy="100" r="94"/><circle cx="100" cy="100" r="80"/><circle cx="100" cy="100" r="66"/><path d="M100 6 L100 194 M6 100 L194 100"/><path d="M100 20 L112 88 L180 100 L112 112 L100 180 L88 112 L20 100 L88 88 Z"/><circle cx="100" cy="100" r="4" fill="white" stroke="none"/></g></svg>');
+  -webkit-mask-size:contain;mask-size:contain;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center;
+  opacity:0.08;
+  pointer-events:none;
+  z-index:0;
+  animation:summonSpin 120s linear infinite;
+}
+@keyframes summonSpin{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}
+.wrap,#toast-root{position:relative;z-index:1;}
+::selection{background:rgba(var(--accent-rgb),0.25);}
+a{color:var(--blue);}
+
+.wrap{max-width:1040px;margin:0 auto;padding:28px 20px 80px;}
+
+/* ---------- Top bar ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;flex-wrap:wrap;gap:14px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .mark{width:30px;height:30px;border:1px solid var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--blue);font-family:var(--display);font-size:14px;box-shadow:0 0 14px rgba(var(--accent-rgb),0.35) inset, 0 0 12px rgba(var(--accent-rgb),0.15);transform:rotate(45deg);}
+.brand .mark span{transform:rotate(-45deg);}
+.brand h1{font-family:var(--display);font-size:15px;letter-spacing:3px;font-weight:700;margin:0;color:#e9f6ff;}
+.brand .sub{font-family:var(--ui);font-size:11px;letter-spacing:2px;color:var(--dim);margin-top:2px;}
+
+.topbar-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.tab{
+  font-family:var(--ui);letter-spacing:1.5px;font-size:13px;font-weight:600;
+  background:transparent;border:1px solid var(--line-soft);color:var(--dim);
+  padding:8px 16px;cursor:pointer;border-radius:2px;transition:all .15s ease;
+  text-transform:uppercase;
+}
+.tab:hover{color:var(--text);border-color:var(--line);}
+.tab.active{color:var(--blue);border-color:var(--blue);box-shadow:0 0 12px rgba(var(--accent-rgb),0.18) inset;background:rgba(var(--accent-rgb),0.05);}
+
+.acct-tag{font-family:var(--mono);font-size:12px;color:var(--dim);display:flex;align-items:center;gap:8px;}
+.acct-tag b{color:var(--text);font-weight:600;}
+.switch-link{background:none;border:1px solid var(--line-soft);color:var(--dim);font-family:var(--ui);font-size:10px;letter-spacing:1px;padding:5px 10px;border-radius:2px;cursor:pointer;text-transform:uppercase;}
+.switch-link:hover{color:var(--blue);border-color:var(--blue);}
+
+/* ---------- Panels ---------- */
+.panel{
+  position:relative;background:linear-gradient(180deg, var(--panel2), var(--panel));
+  border:1px solid var(--line);border-radius:3px;padding:24px;margin-bottom:20px;
+  box-shadow:0 0 0 1px rgba(0,0,0,0.4), 0 12px 40px rgba(0,0,0,0.35);
+}
+.panel::before,.panel::after{content:"";position:absolute;width:14px;height:14px;border:1px solid var(--blue);opacity:.7;}
+.panel::before{top:-1px;left:-1px;border-right:none;border-bottom:none;}
+.panel::after{bottom:-1px;right:-1px;border-left:none;border-top:none;}
+.panel-title{font-family:var(--ui);font-size:12px;letter-spacing:3px;color:var(--blue-dim);text-transform:uppercase;margin:0 0 16px;display:flex;align-items:center;gap:8px;}
+.panel-title::before{content:"◆";color:var(--blue);font-size:9px;}
+
+/* ---------- Login / account screen ---------- */
+.login-panel{max-width:520px;margin:50px auto 0;}
+.login-panel p{color:var(--dim);font-size:13px;line-height:1.7;margin:0 0 18px;}
+.profile-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+.chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.02);border:1px solid var(--line-soft);color:var(--text);padding:8px 14px 8px 8px;border-radius:22px;cursor:pointer;font-family:var(--ui);font-size:13px;transition:all .15s ease;}
+.chip:hover{border-color:var(--blue);color:var(--blue);}
+.chip-avatar{width:24px;height:24px;border-radius:50%;background:rgba(var(--accent-rgb),0.15);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:11px;color:var(--blue);}
+
+/* ---------- Status page ---------- */
+.status-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+.hunter-name{font-family:var(--display);font-size:26px;color:#f2f9ff;letter-spacing:1px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.hunter-name:hover{color:var(--blue);}
+.hunter-title{font-family:var(--ui);color:var(--gold);letter-spacing:2px;font-size:13px;margin-top:4px;text-transform:uppercase;}
+.rank-badge{
+  font-family:var(--display);font-size:13px;letter-spacing:2px;padding:8px 18px;border-radius:2px;
+  border:1px solid var(--violet);color:var(--violet);white-space:nowrap;
+  box-shadow:0 0 16px rgba(139,107,255,0.25) inset;
+}
+.rank-badge.rk-e{border-color:#4ade80;color:#4ade80;box-shadow:0 0 16px rgba(74,222,128,0.25) inset;}
+.rank-badge.rk-d{border-color:#facc15;color:#facc15;box-shadow:0 0 16px rgba(250,204,21,0.25) inset;}
+.rank-badge.rk-c{border-color:#fb923c;color:#fb923c;box-shadow:0 0 16px rgba(251,146,60,0.25) inset;}
+.rank-badge.rk-b{border-color:#fb7185;color:#fb7185;box-shadow:0 0 16px rgba(251,113,133,0.25) inset;}
+.rank-badge.rk-a{border-color:#ffffff;color:#ffffff;box-shadow:0 0 16px rgba(255,255,255,0.25) inset;}
+.rank-badge.rk-s{border-color:#60a5fa;color:#60a5fa;box-shadow:0 0 16px rgba(96,165,250,0.25) inset;}
+.rank-badge.rk-ss{border-color:#3b82f6;color:#3b82f6;box-shadow:0 0 18px rgba(59,130,246,0.3) inset;}
+.rank-badge.rk-nat{border-color:#a78bfa;color:#a78bfa;box-shadow:0 0 18px rgba(167,139,250,0.3) inset;}
+.rank-badge.rk-shadow{
+  border-color:#c084fc;color:#e9d5ff;
+  background:linear-gradient(135deg,rgba(192,132,252,0.22),rgba(0,0,0,0.65));
+  box-shadow:0 0 22px rgba(192,132,252,0.4) inset, 0 0 20px rgba(0,0,0,0.5);
+  text-shadow:0 0 10px rgba(192,132,252,0.7);
+}
+.skill-card .sk-rank.rk-e{color:#4ade80;border-color:#4ade80;}
+.skill-card .sk-rank.rk-d{color:#facc15;border-color:#facc15;}
+.skill-card .sk-rank.rk-c{color:#fb923c;border-color:#fb923c;}
+.skill-card .sk-rank.rk-b{color:#fb7185;border-color:#fb7185;}
+.skill-card .sk-rank.rk-a{color:#ffffff;border-color:#ffffff;}
+.skill-card .sk-rank.rk-s{color:#60a5fa;border-color:#60a5fa;}
+.skill-card .sk-rank.rk-ss{color:#3b82f6;border-color:#3b82f6;}
+.skill-card .sk-rank.rk-nat{color:#a78bfa;border-color:#a78bfa;}
+.skill-card .sk-rank.rk-shadow{color:#e9d5ff;border-color:#c084fc;background:linear-gradient(135deg,rgba(192,132,252,0.2),rgba(0,0,0,0.6));text-shadow:0 0 8px rgba(192,132,252,0.6);}
+
+.level-row{display:flex;align-items:baseline;gap:10px;margin-top:18px;}
+.level-row .lv-label{font-family:var(--ui);font-size:12px;color:var(--dim);letter-spacing:2px;}
+.level-row .lv-num{font-family:var(--display);font-size:42px;color:var(--blue);text-shadow:0 0 18px rgba(var(--accent-rgb),0.45);}
+
+.exp-bar-outer{margin-top:14px;height:10px;border:1px solid var(--line);border-radius:2px;background:rgba(255,255,255,0.02);overflow:hidden;position:relative;}
+.exp-bar-inner{height:100%;background:linear-gradient(90deg,var(--blue-dim),var(--blue));box-shadow:0 0 10px rgba(var(--accent-rgb),0.6);transition:width .4s ease;}
+.exp-nums{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:6px;}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-top:22px;}
+.stat-box{border:1px solid var(--line-soft);padding:12px 14px;border-radius:2px;background:rgba(255,255,255,0.015);}
+.stat-box .num{font-family:var(--mono);font-size:22px;color:var(--text);font-weight:600;}
+.stat-box .lbl{font-family:var(--ui);font-size:10px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;margin-top:2px;}
+
+.name-edit-form{display:flex;gap:8px;align-items:center;}
+.name-edit-form input{font-family:var(--display);font-size:20px;background:var(--panel);border:1px solid var(--blue);color:#fff;padding:6px 10px;border-radius:2px;}
+
+/* ---------- Buttons ---------- */
+.btn{
+  font-family:var(--ui);letter-spacing:1.5px;font-size:13px;font-weight:600;text-transform:uppercase;
+  background:rgba(var(--accent-rgb),0.08);border:1px solid var(--blue);color:var(--blue);
+  padding:9px 18px;border-radius:2px;cursor:pointer;transition:all .15s ease;
+}
+.btn:hover{background:rgba(var(--accent-rgb),0.18);box-shadow:0 0 14px rgba(var(--accent-rgb),0.25);}
+.btn.ghost{background:transparent;border-color:var(--line-soft);color:var(--dim);}
+.btn.ghost:hover{color:var(--text);border-color:var(--line);}
+.btn.gold{border-color:var(--gold);color:var(--gold);background:rgba(var(--gold-rgb),0.08);}
+.btn.gold:hover{background:rgba(var(--gold-rgb),0.18);}
+.btn.violet{border-color:var(--violet);color:var(--violet);background:rgba(139,107,255,0.08);}
+.btn.violet:hover{background:rgba(139,107,255,0.18);}
+
+/* ---------- Heatmap ---------- */
+.heatmap-scroll{overflow-x:auto;padding-bottom:6px;}
+.heatmap{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,11px);gap:3px;width:max-content;}
+.hm-cell{width:11px;height:11px;border-radius:2px;background:rgba(255,255,255,0.04);}
+.hm-cell[data-lvl="1"]{background:rgba(var(--accent-rgb),0.25);}
+.hm-cell[data-lvl="2"]{background:rgba(var(--accent-rgb),0.48);}
+.hm-cell[data-lvl="3"]{background:rgba(var(--accent-rgb),0.72);}
+.hm-cell[data-lvl="4"]{background:var(--blue);box-shadow:0 0 6px rgba(var(--accent-rgb),0.8);}
+.hm-legend{display:flex;align-items:center;gap:6px;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--dim);}
+
+/* ---------- Forms ---------- */
+label{font-family:var(--ui);font-size:11px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:5px;}
+select,textarea,input[type=text],input[type=number]{
+  width:100%;background:rgba(255,255,255,0.02);border:1px solid var(--line-soft);color:var(--text);
+  padding:10px 12px;border-radius:2px;font-family:var(--body);font-size:14px;
+}
+select:focus,textarea:focus,input:focus{outline:none;border-color:var(--blue);}
+.field{margin-bottom:14px;}
+.diff-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.diff-opt{border:1px solid var(--line-soft);border-radius:2px;padding:10px 6px;text-align:center;cursor:pointer;font-family:var(--ui);font-size:12px;letter-spacing:1px;color:var(--dim);}
+.diff-opt small{display:block;font-family:var(--mono);color:var(--dim);margin-top:3px;}
+.diff-opt.sel{border-color:var(--blue);color:var(--blue);background:rgba(var(--accent-rgb),0.06);}
+
+.mode-toggle{display:flex;gap:8px;margin-bottom:18px;}
+.mode-btn{font-family:var(--ui);font-size:12px;letter-spacing:1.5px;padding:9px 18px;border:1px solid var(--line-soft);background:transparent;color:var(--dim);border-radius:2px;cursor:pointer;text-transform:uppercase;}
+.mode-btn.sel{border-color:var(--violet);color:var(--violet);background:rgba(139,107,255,0.08);}
+.mode-btn.sel.skillmode{border-color:var(--blue);color:var(--blue);background:rgba(var(--accent-rgb),0.06);}
+
+/* ---------- Quest log list ---------- */
+.qlog-item{border-left:2px solid var(--line);padding:10px 0 10px 14px;margin-bottom:6px;}
+.qlog-item.journal{border-left-color:var(--violet);}
+.qlog-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.qlog-skill{font-family:var(--ui);color:var(--blue);font-size:13px;letter-spacing:1px;}
+.qlog-skill.journal{color:var(--violet);}
+.qlog-date{font-family:var(--mono);font-size:11px;color:var(--dim);}
+.qlog-desc{font-size:13.5px;color:var(--text);margin-top:4px;line-height:1.5;white-space:pre-wrap;}
+.qlog-exp{font-family:var(--mono);font-size:12px;color:var(--green);margin-top:4px;}
+.qlog-exp.journal{color:var(--violet);}
+
+/* ---------- Skills grid ---------- */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+.skill-card{border:1px solid var(--line-soft);border-radius:2px;padding:14px;background:rgba(255,255,255,0.015);position:relative;}
+.skill-card .sk-name{font-family:var(--ui);font-size:15px;color:#eef5ff;letter-spacing:.5px;}
+.skill-card .sk-cat{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:2px;text-transform:uppercase;}
+.skill-card .sk-rank{position:absolute;top:14px;right:14px;font-family:var(--display);font-size:10px;letter-spacing:1px;color:var(--violet);border:1px solid var(--violet);padding:3px 8px;border-radius:2px;}
+.skill-card .sk-lv{font-family:var(--mono);font-size:20px;color:var(--blue);margin-top:14px;}
+.skill-card .sk-bar-outer{height:6px;border:1px solid var(--line-soft);border-radius:2px;margin-top:8px;overflow:hidden;}
+.skill-card .sk-bar-inner{height:100%;background:linear-gradient(90deg,var(--blue-dim),var(--blue));}
+.skill-card .sk-meta{font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-top:8px;}
+
+.empty-note{color:var(--dim);font-size:13.5px;font-family:var(--body);border:1px dashed var(--line-soft);padding:20px;border-radius:2px;text-align:center;}
+
+/* ---------- License / certificate — "System Window" style ---------- */
+.cert-stage{width:100%;display:flex;justify-content:center;margin-bottom:20px;overflow:hidden;}
+.license{
+  width:880px;flex:none;
+  border:1px solid rgba(var(--accent-rgb),0.55);
+  background:
+    repeating-linear-gradient(0deg, rgba(var(--accent-rgb),0.025) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 700px 300px at 50% 0%, rgba(var(--accent-rgb),0.07), transparent 65%),
+    linear-gradient(180deg, rgba(10,16,26,0.94), rgba(4,7,13,0.97));
+  position:relative;padding:34px;transform-origin:top center;
+  box-shadow:
+    0 0 0 1px rgba(var(--accent-rgb),0.12),
+    0 0 46px rgba(var(--accent-rgb),0.16) inset,
+    0 22px 60px rgba(0,0,0,0.55);
+}
+.license::before,.license::after{border-color:var(--blue);width:18px;height:18px;box-shadow:0 0 8px rgba(var(--accent-rgb),0.6);}
+.cert-inner-frame{position:absolute;inset:10px;border:1px solid rgba(var(--accent-rgb),0.28);pointer-events:none;}
+.cert-corner{position:absolute;width:14px;height:14px;border:1px solid var(--blue);opacity:.8;box-shadow:0 0 8px rgba(var(--accent-rgb),0.55);pointer-events:none;}
+.cert-corner.tr{top:-1px;right:-1px;border-left:none;border-bottom:none;}
+.cert-corner.bl{bottom:-1px;left:-1px;border-right:none;border-top:none;}
+.license .panel-title::before{color:var(--blue);}
+.license-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid rgba(var(--accent-rgb),0.3);padding-bottom:16px;margin-bottom:20px;}
+.license-head h2{font-family:var(--display);color:var(--blue);letter-spacing:4px;font-size:16px;margin:0;text-shadow:0 0 12px rgba(var(--accent-rgb),0.6);}
+.license-head .id{font-family:var(--mono);color:var(--dim);font-size:11px;margin-top:6px;}
+.cert-subtitle{font-family:var(--ui);font-size:11.5px;font-style:italic;letter-spacing:.5px;color:var(--dim);margin-top:8px;}
+.avatar{width:64px;height:64px;border:1px solid var(--blue);border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--blue);text-shadow:0 0 10px rgba(var(--accent-rgb),0.6);box-shadow:0 0 14px rgba(var(--accent-rgb),0.25) inset;}
+.lic-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+.lic-field .lbl{font-family:var(--ui);font-size:10px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;}
+.lic-field .val{font-family:var(--mono);font-size:16px;color:var(--blue);margin-top:3px;text-shadow:0 0 8px rgba(var(--accent-rgb),0.35);}
+.lic-skills{border-top:1px solid rgba(var(--accent-rgb),0.3);padding-top:16px;}
+.lic-skills .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12.5px;padding:5px 0;color:var(--text);}
+.lic-skills .row span:last-child{color:var(--blue);text-shadow:0 0 6px rgba(var(--accent-rgb),0.4);}
+
+.cert-brand-row{display:flex;align-items:center;gap:14px;}
+.cert-logo{flex:none;filter:drop-shadow(0 0 8px rgba(var(--accent-rgb),0.45));}
+.cert-watermark{position:absolute;right:18px;bottom:70px;opacity:0.07;pointer-events:none;}
+.lic-sign-row{border-top:1px solid rgba(var(--accent-rgb),0.3);margin-top:20px;padding-top:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;}
+.lic-sign{text-align:center;min-width:180px;}
+.lic-sign .sign-name{font-family:var(--sign);font-size:34px;color:#eaf7ff;line-height:1;text-shadow:0 0 10px rgba(var(--accent-rgb),0.4);}
+.lic-sign .sign-line{border-top:1px solid rgba(var(--accent-rgb),0.45);margin-top:6px;padding-top:6px;font-family:var(--ui);font-size:10.5px;letter-spacing:2px;color:var(--blue);text-transform:uppercase;}
+.lic-sign .sign-role{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:2px;}
+.lic-seal{width:70px;height:70px;border:1px solid var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;position:relative;box-shadow:0 0 16px rgba(var(--accent-rgb),0.3);}
+.lic-seal::before{content:"";position:absolute;inset:6px;border:1px dashed rgba(var(--accent-rgb),0.55);border-radius:50%;}
+.lic-seal span{font-family:var(--display);font-size:9px;letter-spacing:1px;color:var(--blue);text-align:center;line-height:1.3;text-shadow:0 0 6px rgba(var(--accent-rgb),0.5);}
+
+/* ---------- Toasts ---------- */
+#toast-root{position:fixed;top:18px;right:18px;z-index:999;display:flex;flex-direction:column;gap:10px;}
+.toast{
+  font-family:var(--ui);letter-spacing:1px;font-size:13px;
+  background:rgba(6,10,18,0.95);border:1px solid var(--blue);color:var(--blue);
+  padding:12px 18px;border-radius:2px;box-shadow:0 0 24px rgba(var(--accent-rgb),0.3);
+  animation:toastIn .3s ease, toastOut .4s ease 3.8s forwards;
+  max-width:300px;
+}
+.toast.gold{border-color:var(--gold);color:var(--gold);box-shadow:0 0 24px rgba(var(--gold-rgb),0.35);}
+.toast.violet{border-color:var(--violet);color:var(--violet);box-shadow:0 0 24px rgba(139,107,255,0.35);}
+.toast b{display:block;font-family:var(--display);font-size:12px;letter-spacing:2px;margin-bottom:4px;}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:translateX(0);}}
+@keyframes toastOut{to{opacity:0;transform:translateX(30px);}}
+
+/* ---------- Settings ---------- */
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;border-bottom:1px solid var(--line-soft);flex-wrap:wrap;}
+.settings-row:last-child{border-bottom:none;}
+.settings-row .srow-label{font-family:var(--ui);font-size:14px;color:var(--text);letter-spacing:.5px;}
+.settings-row .srow-sub{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:3px;}
+.theme-swatches{display:flex;gap:12px;flex-wrap:wrap;}
+.theme-swatch{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:none;border:none;padding:0;font-family:var(--ui);font-size:11px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;}
+.theme-swatch .dot{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);position:relative;transition:all .15s ease;}
+.theme-swatch.sel .dot{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,0.12);}
+.theme-swatch.sel{color:var(--text);}
+.theme-swatch .dot.dot-blue{background:radial-gradient(circle at 35% 30%, #7ff2ff, #2a7f94);}
+.theme-swatch .dot.dot-red{background:radial-gradient(circle at 35% 30%, #ff8a97, #8a2c38);}
+.theme-swatch .dot.dot-green{background:radial-gradient(circle at 35% 30%, #8bffc0, #1f7a4c);}
+.settings-name-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.settings-name-form input{max-width:220px;}
+
+/* ---------- Achievements (compact) ---------- */
+.ach-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;}
+.ach-chip{flex:none;display:flex;align-items:center;gap:6px;border:1px solid var(--line-soft);color:var(--dim);padding:7px 12px;border-radius:20px;font-family:var(--ui);font-size:11.5px;letter-spacing:.5px;white-space:nowrap;}
+.ach-chip.unlocked{border-color:var(--gold);color:var(--gold);background:rgba(var(--gold-rgb),0.07);}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px;}
+.ach-toggle{background:none;border:none;color:var(--blue);font-family:var(--ui);font-size:11.5px;letter-spacing:1.5px;cursor:pointer;text-transform:uppercase;padding:0;margin-top:10px;}
+.ach-toggle:hover{text-decoration:underline;}
+
+/* ---------- Digital Resume / Portfolio Builder ---------- */
+.pf-steps{display:flex;gap:6px;overflow-x:auto;margin-bottom:20px;padding-bottom:6px;}
+.pf-step-dot{flex:none;font-family:var(--ui);font-size:11px;letter-spacing:1px;color:var(--dim);padding:7px 13px;border:1px solid var(--line-soft);border-radius:20px;text-transform:uppercase;white-space:nowrap;background:transparent;cursor:pointer;}
+.pf-step-dot:hover{color:var(--text);}
+.pf-step-dot.done{color:var(--green);border-color:var(--green);}
+.pf-step-dot.active{color:var(--blue);border-color:var(--blue);background:rgba(var(--accent-rgb),0.08);}
+.pf-upload{border:1px dashed var(--line-soft);border-radius:4px;padding:18px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.pf-upload:hover{border-color:var(--blue);}
+.pf-upload img{width:88px;height:88px;object-fit:cover;border-radius:50%;border:1px solid var(--blue);box-shadow:0 0 14px rgba(var(--accent-rgb),0.3);}
+.pf-upload .hint{font-family:var(--mono);font-size:11px;color:var(--dim);}
+.pf-skill-row-wrap{border-bottom:1px solid var(--line-soft);}
+.pf-skill-row-wrap:last-child{border-bottom:none;}
+.pf-skill-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:none;}
+.pf-skill-row label{margin:0;flex:1;color:var(--text);font-family:var(--body);font-size:13.5px;text-transform:none;letter-spacing:0;display:flex;align-items:center;gap:8px;cursor:pointer;}
+.pf-skill-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--blue);flex:none;}
+.pf-skill-row .sk-badge{font-family:var(--mono);font-size:11px;color:var(--dim);white-space:nowrap;}
+.pf-cert-details{margin:0 0 10px;}
+.pf-cert-details summary{cursor:pointer;font-family:var(--ui);font-size:11.5px;letter-spacing:1px;color:var(--blue);list-style:none;padding:4px 0;}
+.pf-cert-details summary::-webkit-details-marker{display:none;}
+.pf-cert-details summary::before{content:"▸ ";}
+.pf-cert-details[open] summary::before{content:"▾ ";}
+.pf-cert-body{padding:10px 12px 4px;border-left:2px solid rgba(var(--accent-rgb),0.35);margin-left:4px;}
+.pf-cert-upload{border:1px dashed var(--line-soft);border-radius:4px;padding:8px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:76px;height:76px;flex:none;}
+.pf-cert-upload:hover{border-color:var(--blue);}
+.pf-cert-upload img{width:100%;height:100%;object-fit:cover;border-radius:2px;}
+.pf-cert-upload .hint{font-family:var(--mono);font-size:9.5px;color:var(--dim);}
+.pf-project-card{border:1px solid var(--line-soft);border-radius:4px;padding:14px;margin-bottom:14px;}
+.pf-shots{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.pf-shot-wrap{position:relative;flex:none;}
+.pf-shot-wrap img{width:76px;height:54px;object-fit:cover;border-radius:2px;border:1px solid var(--line-soft);display:block;}
+.pf-shot-wrap .rm{position:absolute;top:-7px;right:-7px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:11px;line-height:18px;text-align:center;cursor:pointer;border:none;padding:0;}
+.pf-remove-project{background:none;border:1px solid var(--red);color:var(--red);border-radius:2px;padding:5px 10px;font-family:var(--ui);font-size:11px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;flex:none;}
+.pf-color-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.pf-color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,0.15);padding:0;}
+.pf-color-swatch.sel{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,0.15);}
+.pf-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;}
+
+footer.note{text-align:center;font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:10px;}
+
+@media (max-width:640px){
+  .wrap{padding:18px 14px 70px;}
+  .level-row .lv-num{font-size:32px;}
+  .diff-row{grid-template-columns:repeat(2,1fr);}
+  .topbar-right{width:100%;justify-content:space-between;}
+  .tabs{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;}
+  .tab{padding:8px 12px;font-size:12px;flex:none;}
+  .panel{padding:16px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .settings-row{flex-direction:column;align-items:flex-start;}
+}
+
+@page{ size: landscape; margin: 10mm; }
+@media print{
+  html,body{background:#0b0a10 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;height:auto !important;}
+  /* Hide everything except the certificate with display:none (not
+     visibility:hidden) — visibility:hidden still reserves layout space,
+     which was leaving a blank second page in the print/PDF output. */
+  .topbar,.no-print,footer.note,#toast-root{display:none !important;}
+  .wrap{padding:0;margin:0;max-width:100%;}
+  .cert-stage{
+    width:100% !important;height:auto !important;
+    display:flex;justify-content:center;
+    overflow:visible;margin:0;padding:0;
+  }
+  .license{
+    width:100% !important;max-width:1000px;margin:0 auto;
+    box-shadow:none;transform:none !important;
+    break-inside:avoid;page-break-inside:avoid;
+  }
+}
+</style>
+</head>
+<body>
+<div id="toast-root"></div>
+<div class="wrap" id="app">
+  <div class="panel" style="text-align:center;color:var(--dim);font-family:var(--mono);">INITIALIZING SYSTEM...</div>
+</div>
+
+<!-- Firebase SDK (loaded BEFORE the app script so `firebase`/`auth` exist when boot() runs) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDaTXfqH3vFTpFE5Tb9a8HBdbfyy_oaFiQ",
+    authDomain: "shadow-system-c764a.firebaseapp.com",
+    projectId: "shadow-system-c764a",
+    storageBucket: "shadow-system-c764a.firebasestorage.app",
+    messagingSenderId: "846401637018",
+    appId: "1:846401637018:web:7e30a61672db4b228eed23"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- storage helpers (Firestore-backed) ----------------
+     Everything is now saved to Firestore under the signed-in Google
+     account (uid is baked into the key via K()), so the same account
+     shows the same data on any device. The old `shared` flag is kept
+     in the function signature only so existing call-sites don't need
+     to change, but it's unused now — Firestore doc id (the key) is
+     what scopes the data. */
+  async function loadKey(key, fallback, shared){
+    try{
+      const snap = await db.collection('appData').doc(key).get();
+      if(!snap.exists) return fallback;
+      const d = snap.data();
+      return (d && Object.prototype.hasOwnProperty.call(d,'data')) ? d.data : fallback;
+    }catch(e){ console.error('storage load failed', key, e); return fallback; }
+  }
+  async function saveKey(key, value, shared){
+    try{ await db.collection('appData').doc(key).set({ data: value }); return true; }
+    catch(e){ console.error('storage save failed', key, e); return false; }
+  }
+
+  /* ---------------- state ---------------- */
+  let accounts = [];           // shared registry: [{id,name,createdAt}]
+  let currentAccountId = null;
+  let profile = null;          // {name, joinDate}
+  let skills = [];              // {id,name,category,totalExp,createdAt}
+  let entries = [];             // {id,date,skillId,skillName,description,exp,difficulty,type}
+  let achievements = [];
+  let portfolioData = null;    // digital resume / portfolio builder draft
+  let state = { screen:'login', tab:'status', editingName:false, showAddSkill:false, difficulty:'normal', questMode:'skill',dailyGoal:100, showAllAchievements:false, pfStep:'profile' };
+
+  /* ---------------- portfolio / digital resume data ---------------- */
+  function defaultPortfolio(){
+    return {
+      name:'', tagline:'', about:'', profileImage:null,
+      selectedSkillIds:[], extraSkills:[], skillCertificates:{},
+      projects:[], contact:{name:'',phone:'',github:'',email:''},
+      color:'#4de8ff'
+    };
+  }
+  async function savePortfolio(){ await saveKey(K('portfolio'), portfolioData, true); }
+  function fileToDataURL(file, maxDim, quality){
+    maxDim = maxDim || 640; quality = quality || 0.72;
+    return new Promise(function(resolve, reject){
+      const reader = new FileReader();
+      reader.onload = function(){
+        const img = new Image();
+        img.onload = function(){
+          let w = img.width, h = img.height;
+          if(w > maxDim || h > maxDim){
+            const scale = maxDim / Math.max(w,h);
+            w = Math.max(1, Math.round(w*scale)); h = Math.max(1, Math.round(h*scale));
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  function hexToRgb(hex){
+    hex = (hex||'#4de8ff').replace('#','');
+    if(hex.length===3) hex = hex.split('').map(function(c){return c+c;}).join('');
+    const num = parseInt(hex,16) || 0x4de8ff;
+    return [(num>>16)&255,(num>>8)&255,num&255].join(',');
+  }
+  const RANK_HEX = {
+    'E-Rank':'#4ade80','D-Rank':'#facc15','C-Rank':'#fb923c','B-Rank':'#fb7185',
+    'A-Rank':'#ffffff','S-Rank':'#60a5fa','SS-Rank':'#3b82f6',
+    'National Level Hunter':'#a78bfa','Shadow Monarch':'#c084fc','Acquired':'#8b6bff'
+  };
+  /* certificate record for a given skill id — read-only default, never mutates state */
+  function certFor(skillId){
+    const store = portfolioData.skillCertificates || {};
+    return store[skillId] || { image:null, issuer:'', date:'', credentialId:'', credentialUrl:'' };
+  }
+  function certHasContent(c){
+    return !!(c && (c.image || c.issuer || c.date || c.credentialId || c.credentialUrl));
+  }
+  /* gets (creating if needed) the mutable certificate record — used only inside event handlers */
+  function getOrCreateCert(skillId){
+    if(!portfolioData.skillCertificates) portfolioData.skillCertificates = {};
+    if(!portfolioData.skillCertificates[skillId]){
+      portfolioData.skillCertificates[skillId] = { image:null, issuer:'', date:'', credentialId:'', credentialUrl:'' };
+    }
+    return portfolioData.skillCertificates[skillId];
+  }
+  function pfSkillsForExport(){
+    const tracked = skills.filter(function(s){ return portfolioData.selectedSkillIds.includes(s.id); }).map(function(s){
+      const lv = levelFromExp(s.totalExp), rank = rankFromLevel(lv.level);
+      const cert = certFor(s.id);
+      return { name:s.name, rank:rank.name, level:lv.level, cert: certHasContent(cert) ? cert : null };
+    });
+    const extra = portfolioData.extraSkills.map(function(s){
+      const cert = certFor(s.id);
+      return { name:s.name, rank:'Acquired', level:null, cert: certHasContent(cert) ? cert : null };
+    });
+    return tracked.concat(extra);
+  }
+
+  /* ---------------- theme ---------------- */
+  const THEME_COLORS = { blue:'#05070d', red:'#0d0507', green:'#050d09' };
+  function applyTheme(theme){
+    const t = (theme==='red'||theme==='green') ? theme : 'blue';
+    document.documentElement.setAttribute('data-theme', t);
+    let metaTag = document.querySelector('meta[name="theme-color"]');
+    if(!metaTag){ metaTag = document.createElement('meta'); metaTag.name = 'theme-color'; document.head.appendChild(metaTag); }
+    metaTag.content = THEME_COLORS[t] || THEME_COLORS.blue;
+  }
+
+  function todayStr(d){ d = d || new Date(); return d.toISOString().slice(0,10); }
+  function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function slugify(s){ return (s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-+|-+$)/g,'').slice(0,40) || 'hunter'; }
+  function K(name){ return 'acct_' + currentAccountId + '_' + name; }
+
+  /* ---------------- leveling math ---------------- */
+  function reqForLevel(level){ return 100 + (level-1)*20; }
+  function levelFromExp(exp){
+    let level=1, cum=0, req=reqForLevel(1);
+    while(exp >= cum+req){ cum += req; level++; req = reqForLevel(level); }
+    return { level, into: exp-cum, need: req, cum };
+  }
+  const RANKS = [
+    {min:1,   name:'E-Rank',  cls:'rk-e'},
+    {min:6,   name:'D-Rank',  cls:'rk-d'},
+    {min:11,  name:'C-Rank',  cls:'rk-c'},
+    {min:21,  name:'B-Rank',  cls:'rk-b'},
+    {min:31,  name:'A-Rank',  cls:'rk-a'},
+    {min:41,  name:'S-Rank',  cls:'rk-s'},
+    {min:51,  name:'SS-Rank', cls:'rk-ss'},
+    {min:71,  name:'National Level Hunter', cls:'rk-nat'},
+    {min:100, name:'Shadow Monarch', cls:'rk-shadow'}
+  ];
+  function rankFromLevel(level){
+    let r = RANKS[0];
+    for(const item of RANKS){ if(level>=item.min) r=item; }
+    return r;
+  }
+  const TITLES = {
+    'E-Rank':'Awakened Beginner','D-Rank':'Steady Grinder','C-Rank':'Rising Hunter',
+    'B-Rank':'Seasoned Hunter','A-Rank':'Elite Hunter','S-Rank':'Peak Hunter','SS-Rank':'Peak Hunter',
+    'National Level Hunter':'National Level Hunter','Shadow Monarch':'Sovereign of Shadows'
+  };
+  const DIFF = { easy:{label:'E-Quest',exp:15}, normal:{label:'D-Quest',exp:30}, hard:{label:'B-Quest',exp:60}, epic:{label:'S-Quest',exp:120} };
+
+  function totalExp(){ return skills.reduce((s,k)=>s+k.totalExp,0); }
+  function todayXP(){
+
+    const today = todayStr();
+
+    return entries
+        .filter(e => e.date === today)
+        .reduce((sum,e)=>sum + (e.exp || 0),0);
+
+}
+  function overall(){ const exp=totalExp(); const lv=levelFromExp(exp); const rank=rankFromLevel(lv.level); return {exp,lv,rank}; }
+
+  function hasAchievement(id){
+
+    return achievements.includes(id);
+
+}
+
+  const ACHIEVEMENTS = [
+    {id:'first_entry',    icon:'🏆', title:'First Quest',        check:s=>s.entryCount>=1},
+    {id:'ten_entries',    icon:'🏆', title:'10 Entries',         check:s=>s.entryCount>=10},
+    {id:'fifty_entries',  icon:'🏆', title:'50 Entries',         check:s=>s.entryCount>=50},
+    {id:'hundred_entries',icon:'👑', title:'100 Entries',        check:s=>s.entryCount>=100},
+    {id:'three_skills',   icon:'🌱', title:'3 Skills',           check:s=>s.skillCount>=3},
+    {id:'five_skills',    icon:'🌿', title:'5 Skills',           check:s=>s.skillCount>=5},
+    {id:'ten_skills',     icon:'🌳', title:'10 Skills',          check:s=>s.skillCount>=10},
+    {id:'xp100',          icon:'⚡', title:'100 XP',             check:s=>s.xp>=100},
+    {id:'xp500',          icon:'⚡', title:'500 XP',             check:s=>s.xp>=500},
+    {id:'xp1000',         icon:'💠', title:'1000 XP',            check:s=>s.xp>=1000},
+    {id:'xp5000',         icon:'💠', title:'5000 XP',            check:s=>s.xp>=5000},
+    {id:'xp10000',        icon:'🔷', title:'10,000 XP',          check:s=>s.xp>=10000},
+    {id:'streak3',        icon:'🔥', title:'3 Day Streak',       check:s=>s.streak>=3},
+    {id:'streak7',        icon:'🔥', title:'7 Day Streak',       check:s=>s.streak>=7},
+    {id:'streak30',       icon:'🔥', title:'30 Day Streak',      check:s=>s.streak>=30},
+    {id:'streak100',      icon:'🔥', title:'100 Day Streak',     check:s=>s.streak>=100},
+    {id:'level10',        icon:'⭐', title:'Level 10',           check:s=>s.level>=10},
+    {id:'level25',        icon:'⭐', title:'Level 25',           check:s=>s.level>=25},
+    {id:'level50',        icon:'🌟', title:'Level 50',           check:s=>s.level>=50},
+    {id:'level100',       icon:'🌟', title:'Level 100',          check:s=>s.level>=100},
+    {id:'rank_d',         icon:'◆', title:'Reached D-Rank',      check:s=>s.level>=6},
+    {id:'rank_c',         icon:'◆', title:'Reached C-Rank',      check:s=>s.level>=11},
+    {id:'rank_b',         icon:'◆', title:'Reached B-Rank',      check:s=>s.level>=21},
+    {id:'rank_a',         icon:'◆', title:'Reached A-Rank',      check:s=>s.level>=31},
+    {id:'rank_s',         icon:'◆', title:'Reached S-Rank',      check:s=>s.level>=41},
+    {id:'rank_ss',        icon:'◆', title:'Reached SS-Rank',     check:s=>s.level>=51},
+    {id:'rank_shadow',    icon:'👑', title:'Became Shadow Monarch', check:s=>s.level>=100}
+  ];
+
+  async function unlockAchievement(id,name){
+
+    if(hasAchievement(id)) return;
+
+    achievements.push(id);
+
+    await saveKey(
+        K("achievements"),
+        achievements,
+        true
+    );
+
+    toast(
+        "ACHIEVEMENT",
+        name,
+        "gold"
+    );
+
+}
+  
+  async function checkAchievements(){
+
+    const o = overall();
+    const s = { xp:o.exp, entryCount:entries.length, skillCount:skills.length, streak:currentStreak(), level:o.lv.level };
+
+    for(const a of ACHIEVEMENTS){
+      if(a.check(s)) await unlockAchievement(a.id, a.title);
+    }
+
+}
+
+  /* ---------------- streaks ---------------- */
+  function dateSet(){ return new Set(entries.map(e=>e.date)); }
+  function currentStreak(){
+    const set = dateSet(); let d = new Date(); let count=0;
+    if(!set.has(todayStr(d))){ d.setDate(d.getDate()-1); }
+    while(set.has(todayStr(d))){ count++; d.setDate(d.getDate()-1); }
+    return count;
+  }
+  function longestStreak(){
+    const days = [...dateSet()].sort();
+    if(!days.length) return 0;
+    let best=1, cur=1;
+    for(let i=1;i<days.length;i++){
+      const prev = new Date(days[i-1]+'T00:00:00'), cur2 = new Date(days[i]+'T00:00:00');
+      const diff = Math.round((cur2-prev)/86400000);
+      if(diff===1){ cur++; } else { cur=1; }
+      if(cur>best) best=cur;
+    }
+    return best;
+  }
+
+  /* ---------------- toasts ---------------- */
+  function toast(title, msg, kind){
+    const root = document.getElementById('toast-root');
+    const el = document.createElement('div');
+    el.className = 'toast' + (kind ? ' '+kind : '');
+    el.innerHTML = '<b>'+esc(title)+'</b>' + esc(msg);
+    root.appendChild(el);
+    setTimeout(()=>{ el.remove(); }, 4300);
+  }
+
+  /* ---------------- heatmap ---------------- */
+  function buildHeatmap(){
+    const counts = {};
+    entries.forEach(e=>{ counts[e.date] = (counts[e.date]||0)+1; });
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(start.getDate() - 370);
+    const startDow = start.getDay();
+    start.setDate(start.getDate() - startDow);
+
+    let cells = '', months = [], lastMonth = -1;
+    const days = [];
+    let d = new Date(start);
+    while(d <= today){ days.push(new Date(d)); d.setDate(d.getDate()+1); }
+
+    days.forEach((day, i)=>{
+      const dow = day.getDay();
+      if(dow===0 && day.getMonth()!==lastMonth){
+        months.push({col: Math.floor(i/7), label: day.toLocaleString('en-US',{month:'short'})});
+        lastMonth = day.getMonth();
+      }
+      const ds = todayStr(day);
+      const c = counts[ds] || 0;
+      let lvl = 0;
+      if(c>0) lvl=1; if(c>=2) lvl=2; if(c>=4) lvl=3; if(c>=7) lvl=4;
+      const future = day > today;
+      cells += '<div class="hm-cell" data-lvl="'+(future?0:lvl)+'" title="'+ds+' — '+c+' entr'+(c===1?'y':'ies')+'"></div>';
+    });
+
+    let monthRow = '<div style="display:grid;grid-auto-flow:column;grid-auto-columns:14px;font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:4px;width:max-content;">';
+    let monthCells = new Array(Math.ceil(days.length/7)+1).fill('');
+    months.forEach(m=>{ monthCells[m.col] = m.label; });
+    monthCells.forEach(m=>{ monthRow += '<div style="grid-column:span 1;">'+m+'</div>'; });
+    monthRow += '</div>';
+
+    return '<div class="heatmap-scroll">' + monthRow + '<div class="heatmap">'+cells+'</div></div>';
+  }
+
+  /* ---------------- render: LOGIN ---------------- */
+  function renderLogin(){
+
+    return `
+    <div class="panel login-panel">
+
+        <div class="panel-title">
+            Access Terminal
+        </div>
+
+        <p>
+            Sign in with Google to continue.
+            Your progress, skills, quests and level will be
+            saved to your Google account and synced automatically.
+        </p>
+
+        <button
+            class="btn"
+            type="button"
+            id="googleSignIn"
+            style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;">
+
+            <svg width="16" height="16" viewBox="0 0 48 48" style="flex:none;">
+                <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.5 29.6 3.5 24 3.5 12.7 3.5 3.5 12.7 3.5 24S12.7 44.5 24 44.5 44.5 35.3 44.5 24c0-1.2-.1-2.4-.9-3.5z"/>
+                <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 5.5 29.6 3.5 24 3.5c-7.9 0-14.7 4.5-17.7 11.2z"/>
+                <path fill="#4CAF50" d="M24 44.5c5.5 0 10.4-1.9 14.2-5.1l-6.6-5.4C29.5 35.6 26.9 36.5 24 36.5c-5.3 0-9.7-3.1-11.3-7.5l-6.6 5.1C9.2 40 16 44.5 24 44.5z"/>
+                <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.6l6.6 5.4C41.4 36 44.5 30.6 44.5 24c0-1.2-.1-2.4-.9-3.5z"/>
+            </svg>
+
+            Sign in with Google
+
+        </button>
+
+        <div
+            style="
+            margin-top:18px;
+            font-family:var(--mono);
+            font-size:11px;
+            color:var(--dim);">
+
+            ✓ One account works on every device.<br>
+            ✓ Progress is saved automatically.<br>
+            ✓ Stay signed in until you log out.
+
+        </div>
+
+    </div>
+    `;
+
+}
+
+
+  /* ---------------- render: STATUS ---------------- */
+  function renderStatus(){
+    const o = overall();
+    const pct = Math.min(100, Math.round((o.lv.into/o.lv.need)*100));
+    const streak = currentStreak(), best = longestStreak();
+    const daysSince = Math.max(1, Math.round((new Date() - new Date(profile.joinDate+'T00:00:00'))/86400000)+1);
+
+    const nameBlock = state.editingName
+      ? '<form id="name-form" class="name-edit-form"><input type="text" name="name" value="'+esc(profile.name)+'" maxlength="24" autofocus>'
+        + '<button type="submit" class="btn">Save</button></form>'
+      : '<div class="hunter-name" data-action="edit-name">'+esc(profile.name)+' <span style="font-size:12px;color:var(--dim);">✎</span></div>';
+
+    return ''
+    + '<div class="panel">'
+      + '<div class="status-head">'
+        + '<div>'+nameBlock+'<div class="hunter-title">'+esc(TITLES[o.rank.name])+'</div></div>'
+        + '<div class="rank-badge '+o.rank.cls+'">'+esc(o.rank.name)+'</div>'
+      + '</div>'
+      + '<div class="level-row"><span class="lv-label">LEVEL</span><span class="lv-num">'+o.lv.level+'</span></div>'
+      + '<div class="exp-bar-outer"><div class="exp-bar-inner" style="width:'+pct+'%"></div></div>'
+      + '<div class="exp-nums"><span>'+o.lv.into+' / '+o.lv.need+' EXP</span><span>Total EXP: '+o.exp+'</span></div>'
+      + '<div class="stat-grid">'
+        + statBox(skills.length,'Skills')
+        + statBox(entries.length,'Entries Logged')
+        + statBox(streak,'Day Streak')
+        + statBox(best,'Best Streak')
+        + statBox(daysSince,'Days as Hunter')
+      + '</div>'
+    + '</div>'
+    + renderDailyGoal()
+    + '<div class="panel">'
+      + '<div class="panel-title">Activity Monitor</div>'
+      + '<div class="stat-grid" style="margin-bottom:18px;">'
+        + statBox(entries.filter(e=>e.date===todayStr()).length,'Today Entries')
+        + statBox(streak,'Current Streak')
+        + statBox(best,'Best Streak')
+        + statBox(dateSet().size,'Active Days')
+      + '</div>'
+      + buildHeatmap()
+      + '<div class="hm-legend">Less <div class="hm-cell" data-lvl="0"></div><div class="hm-cell" data-lvl="1"></div><div class="hm-cell" data-lvl="2"></div><div class="hm-cell" data-lvl="3"></div><div class="hm-cell" data-lvl="4"></div> More</div>'
+    + '</div>'
+    + renderAchievements()
+    + (skills.length ? '<div class="panel"><div class="panel-title">Top Skills</div>'+renderTopSkills()+'</div>' : '');
+  }
+  function statBox(num,lbl){ return '<div class="stat-box"><div class="num">'+num+'</div><div class="lbl">'+lbl+'</div></div>'; }
+  function renderDailyGoal(){
+
+    const xp = todayXP();
+
+    const goal = state.dailyGoal;
+
+    const percent = Math.min(
+        100,
+        Math.round((xp/goal)*100)
+    );
+
+    return `
+        <div class="panel">
+
+            <div class="panel-title">
+                Today's Goal
+            </div>
+
+            <div style="font-family:var(--mono);margin-bottom:8px;">
+                ${xp} / ${goal} XP
+            </div>
+
+            <div class="exp-bar-outer">
+                <div
+                    class="exp-bar-inner"
+                    style="width:${percent}%">
+                </div>
+            </div>
+
+            <div class="exp-nums">
+
+                <span>${percent}% Completed</span>
+
+                ${
+                    xp>=goal
+                    ? "<span style='color:var(--green)'>✓ Goal Completed</span>"
+                    : ""
+                }
+
+            </div>
+
+        </div>
+    `;
+
+}
+  function renderTopSkills(){
+    const top = [...skills].sort((a,b)=>b.totalExp-a.totalExp).slice(0,4);
+    return '<div class="skills-grid">' + top.map(skillCard).join('') + '</div>';
+  }
+
+  function renderAchievements(){
+
+    const unlockedCount = achievements.length;
+    const total = ACHIEVEMENTS.length;
+    const sorted = [...ACHIEVEMENTS].sort((a,b)=> (hasAchievement(b.id)?1:0) - (hasAchievement(a.id)?1:0));
+
+    const body = state.showAllAchievements
+      ? '<div class="ach-grid">' + sorted.map(a=>achievementCard(a.icon+' '+a.title, hasAchievement(a.id))).join('') + '</div>'
+      : '<div class="ach-strip">' + sorted.map(a=>'<div class="ach-chip'+(hasAchievement(a.id)?' unlocked':'')+'">'+a.icon+' '+esc(a.title)+'</div>').join('') + '</div>';
+
+    return `
+
+<div class="panel">
+
+<div class="panel-title">
+
+Achievements (${unlockedCount}/${total})
+
+</div>
+
+${body}
+
+<button class="ach-toggle" data-action="toggle-achievements">${state.showAllAchievements ? '– Show Less' : '+ View All'}</button>
+
+</div>
+
+`;
+
+}
+
+  function achievementCard(title, unlocked){
+
+return `
+
+<div style="
+padding:12px;
+border:1px solid ${
+unlocked
+?"var(--gold)"
+:"var(--line-soft)"
+};
+color:${
+unlocked
+?"var(--gold)"
+:"var(--dim)"
+};
+border-radius:4px;">
+
+${title}
+
+<br><br>
+
+${unlocked
+?"Unlocked"
+:"Locked"}
+
+</div>
+
+`;
+
+}
+
+  /* ---------------- render: SKILLS ---------------- */
+  function skillCard(sk){
+    const lv = levelFromExp(sk.totalExp);
+    const rank = rankFromLevel(lv.level);
+    const pct = Math.min(100, Math.round((lv.into/lv.need)*100));
+    const questCount = entries.filter(e=>e.skillId===sk.id).length;
+    return ''
+    + '<div class="skill-card">'
+      + '<div class="sk-rank '+rank.cls+'">'+esc(rank.name)+'</div>'
+      + '<div class="sk-name">'+esc(sk.name)+'</div>'
+      + '<div class="sk-cat">'+esc(sk.category||'General')+'</div>'
+      + '<div class="sk-lv">Lv. '+lv.level+'</div>'
+      + '<div class="sk-bar-outer"><div class="sk-bar-inner" style="width:'+pct+'%"></div></div>'
+      + '<div class="sk-meta">'+sk.totalExp+' EXP total · '+questCount+' entries</div>'
+    + '</div>';
+  }
+  function renderSkills(){
+    const addForm = state.showAddSkill ? ''
+      + '<form id="skill-form" class="panel" style="margin-top:14px;">'
+        + '<div class="panel-title">Summon New Skill</div>'
+        + '<div class="field"><label>Skill Name</label><input type="text" name="name" placeholder="e.g. Python, Guitar, French" required maxlength="40"></div>'
+        + '<div class="field"><label>Category</label><input type="text" name="category" placeholder="e.g. Programming, Language, Fitness" maxlength="30"></div>'
+        + '<div style="display:flex;gap:10px;"><button type="submit" class="btn">Add Skill</button><button type="button" class="btn ghost" data-action="cancel-add-skill">Cancel</button></div>'
+      + '</form>'
+      : '<button class="btn" data-action="show-add-skill" style="margin-top:14px;">+ New Skill</button>';
+
+    return '<div class="panel">'
+      + '<div class="panel-title">Skill Tree</div>'
+      + (skills.length ? '<div class="skills-grid">'+skills.map(skillCard).join('')+'</div>' : '<div class="empty-note">No skills yet. Every Hunter starts somewhere — summon your first skill below.</div>')
+      + addForm
+    + '</div>';
+  }
+
+  /* ---------------- render: QUESTS (skill quest + free journal) ---------------- */
+  function renderQuests(){
+    const toggle = '<div class="mode-toggle">'
+      + '<button class="mode-btn skillmode'+(state.questMode==='skill'?' sel':'')+'" data-action="quest-mode" data-mode="skill">Skill Quest</button>'
+      + '<button class="mode-btn'+(state.questMode==='journal'?' sel':'')+'" data-action="quest-mode" data-mode="journal">Free Journal</button>'
+    + '</div>';
+
+    let formBlock;
+    if(state.questMode === 'journal'){
+      formBlock = '<form id="journal-form">'
+        + '<div class="field"><label>Write freely — no skill needed</label><textarea name="text" rows="5" placeholder="Anything on your mind today: thoughts, reflections, what happened, ideas..." required></textarea></div>'
+        + '<button type="submit" class="btn violet">Save Entry</button>'
+      + '</form>';
+    } else if(!skills.length){
+      formBlock = '<div class="empty-note">You need at least one Skill for a Skill Quest. Go to the <b>Skills</b> tab, or switch to <b>Free Journal</b> above to write without a skill.</div>';
+    } else {
+      const skillOptions = skills.map(s=>'<option value="'+s.id+'">'+esc(s.name)+'</option>').join('');
+      const diffOptions = Object.keys(DIFF).map(k=>{
+        const d = DIFF[k];
+        return '<label class="diff-opt'+(state.difficulty===k?' sel':'')+'" data-diffopt="'+k+'">'
+          + '<input type="radio" name="difficulty" value="'+k+'" style="display:none;" '+(state.difficulty===k?'checked':'')+'>'
+          + d.label + '<small>+'+d.exp+' XP</small></label>';
+      }).join('') + '<label class="diff-opt'+(state.difficulty==='custom'?' sel':'')+'" data-diffopt="custom">'
+        + '<input type="radio" name="difficulty" value="custom" style="display:none;" '+(state.difficulty==='custom'?'checked':'')+'>Custom<small>set XP</small></label>';
+
+      formBlock = '<form id="quest-form">'
+        + '<div class="field"><label>Skill</label><select name="skillId" required>'+skillOptions+'</select></div>'
+        + '<div class="field"><label>What did you learn / do today?</label><textarea name="description" rows="3" placeholder="e.g. Finished React hooks section, practiced 30 mins scales..." required></textarea></div>'
+        + '<div class="field"><label>Quest Difficulty</label><div class="diff-row">'+diffOptions+'</div></div>'
+        + '<div class="field" id="custom-exp-wrap" style="display:'+(state.difficulty==='custom'?'block':'none')+';"><label>Custom XP (1-500)</label><input type="number" name="customExp" min="1" max="500" value="30"></div>'
+        + '<button type="submit" class="btn">Complete Quest</button>'
+      + '</form>';
+    }
+
+    return ''
+    + '<div class="panel">'
+      + '<div class="panel-title">'+(state.questMode==='journal' ? 'Free Journal' : 'Complete a Daily Quest')+'</div>'
+      + toggle
+      + formBlock
+    + '</div>'
+    + '<div class="panel">'
+      + '<div class="panel-title">Activity Log ('+entries.length+')</div>'
+      + (entries.length ? renderQuestLog() : '<div class="empty-note">Nothing logged yet. Your first entry starts the record.</div>')
+    + '</div>';
+  }
+  function renderQuestLog(){
+    const sorted = [...entries].sort((a,b)=> (b.date+b.id).localeCompare(a.date+a.id));
+    return sorted.slice(0,150).map(e=>{
+      const isJournal = e.type === 'journal';
+      const expLine = isJournal
+        ? '<div class="qlog-exp journal">Free Journal Entry</div>'
+        : '<div class="qlog-exp">+'+e.exp+' XP · '+esc((DIFF[e.difficulty]&&DIFF[e.difficulty].label) || 'Custom Quest')+'</div>';
+      return '<div class="qlog-item'+(isJournal?' journal':'')+'">'
+        + '<div class="qlog-top"><span class="qlog-skill'+(isJournal?' journal':'')+'">'+esc(e.skillName)+'</span><span class="qlog-date">'+e.date+'</span></div>'
+        + '<div class="qlog-desc">'+esc(e.description)+'</div>'
+        + expLine
+      + '</div>';
+    }).join('');
+  }
+
+  /* ---------------- render: LICENSE ---------------- */
+  function hunterId(){
+    const s = profile.name + profile.joinDate;
+    let h = 0; for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) >>> 0; }
+    return 'HTR-' + h.toString(36).toUpperCase().slice(0,6).padStart(6,'0');
+  }
+  function renderLicense(){
+    const o = overall();
+    const streak = currentStreak(), best = longestStreak();
+    const top = [...skills].sort((a,b)=>b.totalExp-a.totalExp).slice(0,5);
+    return ''
+    + '<div class="cert-stage" id="cert-stage">'
+    + '<div class="panel license" id="cert-panel">'
+      + '<div class="cert-inner-frame"></div>'
+      + '<span class="cert-corner tr"></span><span class="cert-corner bl"></span>'
+      + certWatermark(160)
+      + '<div class="license-head">'
+        + '<div class="cert-brand-row">'
+          + certLogo(56)
+          + '<div><h2>HUNTER LICENSE</h2><div class="id">ID '+hunterId()+' · Registered '+profile.joinDate+'</div>'
+            + '<div class="cert-subtitle">This certifies that the Hunter named below is registered and ranked by The System</div>'
+          + '</div>'
+        + '</div>'
+        + '<div class="avatar">'+esc((profile.name||'H').charAt(0).toUpperCase())+'</div>'
+      + '</div>'
+      + '<div class="lic-grid">'
+        + licField('Name', profile.name)
+        + licField('Title', TITLES[o.rank.name])
+        + licField('Rank', o.rank.name)
+        + licField('Level', o.lv.level)
+        + licField('Total EXP', o.exp)
+        + licField('Entries Logged', entries.length)
+        + licField('Current Streak', streak+' days')
+        + licField('Longest Streak', best+' days')
+      + '</div>'
+      + '<div class="lic-skills">'
+        + '<div class="panel-title" style="margin-bottom:10px;">Top Skills</div>'
+        + (top.length ? top.map(s=>{
+            const lv = levelFromExp(s.totalExp);
+            return '<div class="row"><span>'+esc(s.name)+' — '+esc(rankFromLevel(lv.level).name)+'</span><span>Lv.'+lv.level+'</span></div>';
+          }).join('') : '<div class="row"><span>No skills recorded yet</span></div>')
+      + '</div>'
+      + '<div class="lic-sign-row">'
+        + '<div class="lic-sign">'
+          + '<div class="sign-name">'+esc(profile.name)+'</div>'
+          + '<div class="sign-line">Hunter Signature</div>'
+        + '</div>'
+        + '<div class="lic-seal"><span>OFFICIAL<br>SEAL</span></div>'
+        + '<div class="lic-sign">'
+          + '<div class="sign-name">Shivaraj</div>'
+          + '<div class="sign-line">CEO Signature</div>'
+          + '<div class="sign-role">The Shadow System</div>'
+        + '</div>'
+      + '</div>'
+      + '</div>'
+    + '</div>'
+    + '<div class="no-print" style="text-align:center;">'
+      + '<button class="btn gold" id="print-btn" data-action="print">Download Certificate (PDF)</button>'
+      + '<div style="font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:8px;">Uses your browser\'s print dialog — choose "Save as PDF".</div>'
+    + '</div>';
+  }
+  function certLogo(size){
+    return '<svg class="cert-logo" width="'+size+'" height="'+size+'" viewBox="0 0 100 100">'
+      + '<defs><linearGradient id="certGrad" x1="0%" y1="0%" x2="100%" y2="100%">'
+        + '<stop offset="0%" style="stop-color:var(--blue)"/><stop offset="100%" style="stop-color:var(--violet)"/>'
+      + '</linearGradient></defs>'
+      + '<circle cx="50" cy="50" r="46" fill="none" stroke="url(#certGrad)" stroke-width="2"/>'
+      + '<circle cx="50" cy="50" r="37" fill="none" stroke="url(#certGrad)" stroke-width="1" opacity="0.55"/>'
+      + '<path d="M50 16 L59 38 L83 30 L73 52 L88 60 L64 66 L67 90 L50 74 L33 90 L36 66 L12 60 L27 52 L17 30 L41 38 Z" fill="none" stroke="url(#certGrad)" stroke-width="1.4"/>'
+      + '<text x="50" y="59" text-anchor="middle" font-family="Orbitron, sans-serif" font-weight="700" font-size="28" fill="url(#certGrad)">S</text>'
+    + '</svg>';
+  }
+  function certWatermark(size){
+    return '<div class="cert-watermark">'+certLogo(size)+'</div>';
+  }
+  function licField(lbl,val){ return '<div class="lic-field"><div class="lbl">'+lbl+'</div><div class="val">'+esc(val)+'</div></div>'; }
+
+  /* ---------------- render: PORTFOLIO / DIGITAL RESUME ---------------- */
+  const PF_STEPS = ['profile','about','skills','projects','contact','theme'];
+  const PF_LABELS = {profile:'Profile',about:'About',skills:'Skills',projects:'Projects',contact:'Contact',theme:'Theme & Download'};
+  const PF_COLORS = [
+    {v:'#4de8ff', n:'Blue'}, {v:'#ff5468', n:'Red'}, {v:'#48e08a', n:'Green'},
+    {v:'#ffb84d', n:'Gold'}, {v:'#8b6bff', n:'Violet'}, {v:'#e94ce8', n:'Pink'}
+  ];
+  function renderPortfolio(){
+    const idx = PF_STEPS.indexOf(state.pfStep);
+    const stepper = '<div class="pf-steps">' + PF_STEPS.map(function(s,i){
+      const cls = s===state.pfStep ? 'active' : (i<idx ? 'done' : '');
+      return '<button type="button" class="pf-step-dot '+cls+'" data-action="pf-goto" data-step="'+s+'">'+(i+1)+'. '+PF_LABELS[s]+'</button>';
+    }).join('') + '</div>';
+
+    let body = '';
+    if(state.pfStep==='profile') body = renderPfProfileStep();
+    else if(state.pfStep==='about') body = renderPfAboutStep();
+    else if(state.pfStep==='skills') body = renderPfSkillsStep();
+    else if(state.pfStep==='projects') body = renderPfProjectsStep();
+    else if(state.pfStep==='contact') body = renderPfContactStep();
+    else if(state.pfStep==='theme') body = renderPfThemeStep();
+
+    return '<div class="panel">'
+      + '<div class="panel-title">Digital Resume Builder</div>'
+      + '<div style="font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-bottom:16px;line-height:1.6;">Build a shareable, System-styled portfolio. Fill each step, then generate one self-contained HTML file you can host or send anywhere.</div>'
+      + stepper + body
+    + '</div>';
+  }
+  function renderPfProfileStep(){
+    const img = portfolioData.profileImage;
+    return '<form id="pf-profile-form">'
+      + '<div class="field"><label>Profile Photo</label>'
+        + '<label class="pf-upload" for="pf-photo-input">'
+          + (img ? '<img src="'+img+'">' : '<div style="font-size:26px;">📷</div>')
+          + '<div class="hint">'+(img?'Tap to change photo':'Tap to upload a photo')+'</div>'
+        + '</label>'
+        + '<input type="file" id="pf-photo-input" accept="image/*" style="display:none;">'
+      + '</div>'
+      + '<div class="field"><label>Full Name</label><input type="text" name="name" value="'+esc(portfolioData.name||profile.name)+'" maxlength="40" required></div>'
+      + '<div class="field"><label>Tagline / Role</label><input type="text" name="tagline" value="'+esc(portfolioData.tagline)+'" maxlength="60" placeholder="e.g. Full-Stack Developer · Awakened Hunter"></div>'
+      + '<div class="pf-nav"><span></span><button type="submit" class="btn">Next →</button></div>'
+    + '</form>';
+  }
+  function renderPfAboutStep(){
+    return '<form id="pf-about-form">'
+      + '<div class="field"><label>About Me</label><textarea name="about" rows="6" maxlength="800" placeholder="Tell visitors who you are, what you do, and what drives you...">'+esc(portfolioData.about)+'</textarea></div>'
+      + '<div class="pf-nav"><button type="button" class="btn ghost" data-action="pf-goto" data-step="profile">← Back</button><button type="submit" class="btn">Next →</button></div>'
+    + '</form>';
+  }
+  function renderPfCertBlock(skillId){
+    const c = certFor(skillId);
+    const has = certHasContent(c);
+    const uploadInner = c.image
+      ? '<img src="'+c.image+'">'
+      : '<div style="font-size:20px;">🎓</div><div class="hint">Add image</div>';
+    return '<details class="pf-cert-details"'+(has?' open':'')+'>'
+      + '<summary>'+(has ? '🎓 Certificate added — edit details' : '+ Add certificate')+'</summary>'
+      + '<div class="pf-cert-body">'
+        + '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;">'
+          + '<label class="pf-cert-upload" for="cert-img-'+skillId+'">'+uploadInner+'</label>'
+          + '<input type="file" id="cert-img-'+skillId+'" accept="image/*" style="display:none;" data-role="pf-cert-image" data-skill-id="'+skillId+'">'
+          + (c.image ? '<button type="button" class="btn ghost" style="font-size:11px;" data-action="pf-remove-cert-image" data-skill-id="'+skillId+'">Remove image</button>' : '')
+        + '</div>'
+        + '<div class="field"><label>Issued By</label><input type="text" maxlength="80" placeholder="e.g. Coursera, Udemy, NPTEL" value="'+esc(c.issuer)+'" data-cert-field="issuer" data-skill-id="'+skillId+'"></div>'
+        + '<div class="field"><label>Issue Date</label><input type="text" maxlength="40" placeholder="e.g. March 2025" value="'+esc(c.date)+'" data-cert-field="date" data-skill-id="'+skillId+'"></div>'
+        + '<div class="field"><label>Credential ID</label><input type="text" maxlength="80" placeholder="Optional" value="'+esc(c.credentialId)+'" data-cert-field="credentialId" data-skill-id="'+skillId+'"></div>'
+        + '<div class="field"><label>Credential URL</label><input type="text" maxlength="200" placeholder="Optional — link to verify" value="'+esc(c.credentialUrl)+'" data-cert-field="credentialUrl" data-skill-id="'+skillId+'"></div>'
+      + '</div>'
+    + '</details>';
+  }
+  function renderPfSkillsStep(){
+    const trackedRows = skills.length ? skills.map(function(s){
+      const lv = levelFromExp(s.totalExp), rank = rankFromLevel(lv.level);
+      const checked = portfolioData.selectedSkillIds.includes(s.id) ? 'checked' : '';
+      return '<div class="pf-skill-row-wrap">'
+        + '<div class="pf-skill-row"><label><input type="checkbox" name="skill" value="'+s.id+'" '+checked+'> '+esc(s.name)+'</label><span class="sk-badge">'+esc(rank.name)+' · Lv.'+lv.level+'</span></div>'
+        + renderPfCertBlock(s.id)
+      + '</div>';
+    }).join('') : '<div class="empty-note">No tracked skills yet — you can still add skills manually below.</div>';
+
+    const extraRows = portfolioData.extraSkills.map(function(s){
+      return '<div class="pf-skill-row-wrap">'
+        + '<div class="pf-skill-row"><span>'+esc(s.name)+'</span><button type="button" class="pf-remove-project" data-action="pf-remove-extra-skill" data-id="'+s.id+'">Remove</button></div>'
+        + renderPfCertBlock(s.id)
+      + '</div>';
+    }).join('');
+
+    return '<form id="pf-skills-form">'
+      + '<div class="field"><label>Skills From Your Hunter Log</label>' + trackedRows + '</div>'
+      + (extraRows ? '<div class="field"><label>Manually Added Skills</label>'+extraRows+'</div>' : '')
+      + '<div class="field"><label>Add Another Skill</label><div style="display:flex;gap:8px;"><input type="text" id="pf-extra-skill-input" placeholder="e.g. Public Speaking" maxlength="30"><button type="button" class="btn ghost" data-action="pf-add-extra-skill">Add</button></div></div>'
+      + '<div class="pf-nav"><button type="button" class="btn ghost" data-action="pf-goto" data-step="about">← Back</button><button type="submit" class="btn">Next →</button></div>'
+    + '</form>';
+  }
+  function renderPfProjectsStep(){
+    const list = portfolioData.projects.map(function(p){
+      const shots = p.images.map(function(img,i){
+        return '<span class="pf-shot-wrap"><img src="'+img+'"><button type="button" class="rm" data-action="pf-remove-shot" data-pid="'+p.id+'" data-idx="'+i+'">×</button></span>';
+      }).join('');
+      return '<div class="pf-project-card">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">'
+          + '<div><div style="font-family:var(--ui);color:var(--blue);letter-spacing:1px;font-size:14px;">'+esc(p.title)+'</div>'
+          + (p.desc ? '<div style="font-size:13px;color:var(--text);margin-top:4px;white-space:pre-wrap;">'+esc(p.desc)+'</div>' : '')+'</div>'
+          + '<button type="button" class="pf-remove-project" data-action="pf-remove-project" data-id="'+p.id+'">Remove</button>'
+        + '</div>'
+        + '<div class="pf-shots">'+shots+'</div>'
+        + '<label class="btn ghost" style="display:inline-block;margin-top:10px;cursor:pointer;font-size:11px;">+ Add Screenshot<input type="file" accept="image/*" multiple style="display:none;" data-role="pf-project-shots" data-pid="'+p.id+'"></label>'
+      + '</div>';
+    }).join('');
+
+    return ''
+      + (list || '<div class="empty-note">No projects added yet.</div>')
+      + '<form id="pf-project-form" class="panel" style="margin-top:14px;border-style:dashed;">'
+        + '<div class="panel-title">Add a Project</div>'
+        + '<div class="field"><label>Project Title</label><input type="text" name="title" maxlength="60" required></div>'
+        + '<div class="field"><label>Description</label><textarea name="desc" rows="3" maxlength="500" placeholder="What it does, tech used, your role..."></textarea></div>'
+        + '<div class="field"><label>Screenshots</label><input type="file" name="shots" accept="image/*" multiple></div>'
+        + '<button type="submit" class="btn">+ Add Project</button>'
+      + '</form>'
+      + '<div class="pf-nav"><button type="button" class="btn ghost" data-action="pf-goto" data-step="skills">← Back</button><button type="button" class="btn" data-action="pf-goto" data-step="contact">Next →</button></div>';
+  }
+  function renderPfContactStep(){
+    const c = portfolioData.contact;
+    return '<form id="pf-contact-form">'
+      + '<div class="field"><label>Name</label><input type="text" name="name" value="'+esc(c.name)+'" maxlength="60" required></div>'
+      + '<div class="field"><label>Phone Number</label><input type="text" name="phone" value="'+esc(c.phone)+'" maxlength="24" placeholder="+91 98765 43210"></div>'
+      + '<div class="field"><label>GitHub Link</label><input type="text" name="github" value="'+esc(c.github)+'" maxlength="120" placeholder="https://github.com/username"></div>'
+      + '<div class="field"><label>Email</label><input type="text" name="email" value="'+esc(c.email)+'" maxlength="80" placeholder="you@example.com"></div>'
+      + '<div class="pf-nav"><button type="button" class="btn ghost" data-action="pf-goto" data-step="projects">← Back</button><button type="submit" class="btn">Next →</button></div>'
+    + '</form>';
+  }
+  function renderPfThemeStep(){
+    const swatches = PF_COLORS.map(function(c){
+      return '<button type="button" class="pf-color-swatch'+(portfolioData.color===c.v?' sel':'')+'" style="background:'+c.v+';" title="'+c.n+'" data-action="pf-set-color" data-color="'+c.v+'"></button>';
+    }).join('');
+    return '<div class="field"><label>Accent Color</label>'
+        + '<div class="pf-color-row">'+swatches
+          + '<input type="color" id="pf-custom-color" value="'+portfolioData.color+'" style="width:36px;height:36px;border:none;background:none;cursor:pointer;">'
+        + '</div>'
+      + '</div>'
+      + '<div style="font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:14px 0;line-height:1.6;">Your portfolio downloads as a single, self-contained HTML file styled like The System — open it anywhere, host it, or send it directly. No sign-in needed to view it.</div>'
+      + '<div class="pf-nav"><button type="button" class="btn ghost" data-action="pf-goto" data-step="contact">← Back</button><button type="button" class="btn gold" data-action="pf-download">⬇ Generate &amp; Download Portfolio</button></div>';
+  }
+
+  /* ---------------- portfolio export (standalone HTML file) ---------------- */
+  function generatePortfolioHTML(){
+    const pf = portfolioData;
+    const accentRgb = hexToRgb(pf.color);
+    const name = esc(pf.name || profile.name || 'Hunter');
+    const tagline = esc(pf.tagline || '');
+    const about = esc(pf.about || '').replace(/\n/g,'<br>') || 'This Hunter has not written their story yet.';
+    const skillsList = pfSkillsForExport();
+    const skillCards = skillsList.length ? skillsList.map(function(s){
+      const rc = RANK_HEX[s.rank] || pf.color;
+      const cert = s.cert;
+      const certImg = cert && cert.image ? '<img class="s-skill-cert-img" src="'+cert.image+'" alt="'+esc(s.name)+' certificate">' : '';
+      const certLines = [];
+      if(cert && cert.issuer) certLines.push(esc(cert.issuer));
+      if(cert && cert.date) certLines.push(esc(cert.date));
+      if(cert && cert.credentialId) certLines.push('ID: '+esc(cert.credentialId));
+      const certMeta = certLines.length ? '<div class="s-skill-cert-meta">'+certLines.map(function(l){return '<div>'+l+'</div>';}).join('')+'</div>' : '';
+      const certLink = cert && cert.credentialUrl ? '<a class="s-skill-cert-link" href="'+esc(cert.credentialUrl)+'" target="_blank" rel="noopener">View credential →</a>' : '';
+      return '<div class="s-skill" style="border-color:'+rc+';color:'+rc+';"><div class="s-skill-rank">'+esc(s.rank)+(s.level?' · Lv.'+s.level:'')+'</div><div class="s-skill-name">'+esc(s.name)+'</div>'+certImg+certMeta+certLink+'</div>';
+    }).join('') : '<div class="s-empty">No skills added yet.</div>';
+
+    const projectCards = pf.projects.length ? pf.projects.map(function(p){
+      const shots = p.images.length ? '<div class="s-proj-shots">'+p.images.map(function(img){ return '<img src="'+img+'" alt="'+esc(p.title)+' screenshot" loading="lazy">'; }).join('')+'</div>' : '';
+      return '<div class="s-proj-card">'
+        + '<div class="s-proj-title">'+esc(p.title)+'</div>'
+        + (p.desc ? '<div class="s-proj-desc">'+esc(p.desc).replace(/\n/g,'<br>')+'</div>' : '')
+        + shots
+      + '</div>';
+    }).join('') : '<div class="s-empty">No projects added yet.</div>';
+
+    const c = pf.contact || {};
+    const contactRows = [
+      c.email ? ['Email','<a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>'] : null,
+      c.phone ? ['Phone', esc(c.phone)] : null,
+      c.github ? ['GitHub','<a href="'+esc(c.github)+'" target="_blank" rel="noopener">'+esc(c.github)+'</a>'] : null
+    ].filter(Boolean).map(function(r){ return '<div class="s-contact-row"><span class="s-contact-lbl">'+r[0]+'</span><span class="s-contact-val">'+r[1]+'</span></div>'; }).join('');
+
+    const avatarBlock = pf.profileImage
+      ? '<img class="s-avatar" src="'+pf.profileImage+'" alt="'+name+'">'
+      : '<div class="s-avatar s-avatar-fallback">'+esc(name.charAt(0).toUpperCase())+'</div>';
+
+    return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'
++ '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
++ '<title>'+name+' — Digital Resume</title>'
++ '<style>'
++ "@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');"
++ ':root{--accent:'+pf.color+';--accent-rgb:'+accentRgb+';--bg:#05070d;--panel:#0b1019;--panel2:#0e1420;--text:#c9d3e3;--dim:#5c6785;--mono:\'JetBrains Mono\',monospace;--display:\'Orbitron\',sans-serif;--ui:\'Rajdhani\',sans-serif;--body:\'Inter\',sans-serif;}'
++ '*{box-sizing:border-box;}html,body{margin:0;padding:0;}'
++ 'body{background:radial-gradient(ellipse 1000px 560px at 50% -8%, rgba(var(--accent-rgb),0.16), transparent 62%),radial-gradient(circle at 12% 88%, rgba(var(--accent-rgb),0.08), transparent 42%),radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1.4px) 0 0/38px 38px,var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;}'
++ 'a{color:var(--accent);}'
++ '.s-wrap{max-width:900px;margin:0 auto;padding:60px 20px 90px;position:relative;z-index:1;}'
++ '.s-nav{position:sticky;top:0;z-index:5;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;padding:14px 10px;background:rgba(5,7,13,0.85);backdrop-filter:blur(6px);border-bottom:1px solid rgba(var(--accent-rgb),0.2);}'
++ '.s-nav a{font-family:var(--ui);font-size:12px;letter-spacing:2px;color:var(--dim);text-decoration:none;text-transform:uppercase;padding:6px 12px;border:1px solid transparent;border-radius:2px;}'
++ '.s-nav a:hover{color:var(--accent);border-color:rgba(var(--accent-rgb),0.4);}'
++ '.s-panel{position:relative;background:linear-gradient(180deg, var(--panel2), var(--panel));border:1px solid rgba(var(--accent-rgb),0.3);border-radius:3px;padding:28px;margin:0 0 24px;box-shadow:0 0 0 1px rgba(0,0,0,0.4), 0 12px 40px rgba(0,0,0,0.35);}'
++ '.s-panel::before,.s-panel::after{content:"";position:absolute;width:14px;height:14px;border:1px solid var(--accent);opacity:.7;}'
++ '.s-panel::before{top:-1px;left:-1px;border-right:none;border-bottom:none;}'
++ '.s-panel::after{bottom:-1px;right:-1px;border-left:none;border-top:none;}'
++ '.s-panel-title{font-family:var(--ui);font-size:12px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin:0 0 16px;opacity:0.85;}'
++ '.s-panel-title::before{content:"◆ ";}'
++ '.s-hero{text-align:center;padding:50px 20px 40px;}'
++ '.s-avatar{width:130px;height:130px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);box-shadow:0 0 30px rgba(var(--accent-rgb),0.4);}'
++ '.s-avatar-fallback{display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:50px;color:var(--accent);background:rgba(var(--accent-rgb),0.08);}'
++ '.s-name{font-family:var(--display);font-size:34px;letter-spacing:2px;color:#f2f9ff;margin:22px 0 8px;text-shadow:0 0 18px rgba(var(--accent-rgb),0.5);}'
++ '.s-tagline{font-family:var(--ui);font-size:15px;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;}'
++ '.s-about{font-size:14.5px;line-height:1.8;color:var(--text);}'
++ '.s-skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}'
++ '.s-skill{border:1px solid;border-radius:2px;padding:12px 14px;background:rgba(255,255,255,0.02);}'
++ '.s-skill-rank{font-family:var(--display);font-size:9px;letter-spacing:1px;text-transform:uppercase;opacity:0.85;}'
++ '.s-skill-name{font-family:var(--ui);font-size:15px;color:#eef5ff;margin-top:6px;letter-spacing:.5px;}'
++ '.s-skill-cert-img{display:block;width:100%;max-height:140px;object-fit:cover;border-radius:2px;margin-top:10px;border:1px solid rgba(255,255,255,0.12);}'
++ '.s-skill-cert-meta{font-family:var(--mono);font-size:10.5px;color:var(--text);opacity:0.8;margin-top:8px;line-height:1.6;}'
++ '.s-skill-cert-link{display:inline-block;font-family:var(--ui);font-size:11px;letter-spacing:.5px;margin-top:6px;}'
++ '.s-proj-card{border:1px solid rgba(var(--accent-rgb),0.22);border-radius:3px;padding:18px;margin-bottom:16px;background:rgba(255,255,255,0.015);}'
++ '.s-proj-title{font-family:var(--ui);font-size:17px;color:var(--accent);letter-spacing:1px;}'
++ '.s-proj-desc{font-size:13.5px;color:var(--text);margin-top:8px;line-height:1.7;}'
++ '.s-proj-shots{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}'
++ '.s-proj-shots img{width:220px;max-width:100%;border-radius:3px;border:1px solid rgba(var(--accent-rgb),0.3);}'
++ '.s-contact-row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid rgba(var(--accent-rgb),0.15);font-family:var(--mono);font-size:13.5px;flex-wrap:wrap;}'
++ '.s-contact-row:last-child{border-bottom:none;}'
++ '.s-contact-lbl{color:var(--dim);letter-spacing:1px;text-transform:uppercase;font-size:11px;}'
++ '.s-contact-val{color:var(--text);}'
++ '.s-empty{color:var(--dim);font-size:13px;text-align:center;padding:20px;border:1px dashed rgba(var(--accent-rgb),0.25);border-radius:2px;}'
++ '.s-foot{text-align:center;font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-top:30px;opacity:0.7;}'
++ '@media(max-width:640px){.s-name{font-size:26px;}.s-avatar,.s-avatar-fallback{width:100px;height:100px;}.s-panel{padding:18px;}}'
++ '</style></head><body>'
++ '<nav class="s-nav"><a href="#s-about">About</a><a href="#s-skills">Skills</a><a href="#s-projects">Projects</a><a href="#s-contact">Contact</a></nav>'
++ '<div class="s-wrap">'
+  + '<div class="s-hero">'+avatarBlock+'<div class="s-name">'+name+'</div>'+(tagline?'<div class="s-tagline">'+tagline+'</div>':'')+'</div>'
+  + '<div class="s-panel" id="s-about"><div class="s-panel-title">About Me</div><div class="s-about">'+about+'</div></div>'
+  + '<div class="s-panel" id="s-skills"><div class="s-panel-title">Skill Tree</div><div class="s-skills-grid">'+skillCards+'</div></div>'
+  + '<div class="s-panel" id="s-projects"><div class="s-panel-title">Projects</div>'+projectCards+'</div>'
+  + '<div class="s-panel" id="s-contact"><div class="s-panel-title">Contact</div>'+(contactRows||'<div class="s-empty">No contact details added.</div>')+'</div>'
+  + '<div class="s-foot">Generated with THE SYSTEM // Hunter Activity Log</div>'
++ '</div>'
++ '</body></html>';
+  }
+  function downloadPortfolio(){
+    const html = generatePortfolioHTML();
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = slugify(portfolioData.name || profile.name || 'hunter') + '-portfolio.html';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    toast('PORTFOLIO GENERATED', 'Your digital resume has been downloaded.', 'gold');
+  }
+
+  /* ---------------- render: SETTINGS ---------------- */
+  function renderSettings(){
+    const acc = accounts.find(a=>a.id===currentAccountId);
+    const theme = profile.theme || 'blue';
+
+    const nameBlock = state.editingName
+      ? '<form id="name-form" class="settings-name-form"><input type="text" name="name" value="'+esc(profile.name)+'" maxlength="24" autofocus>'
+        + '<button type="submit" class="btn">Save</button><button type="button" class="btn ghost" data-action="cancel-edit-name">Cancel</button></form>'
+      : '<button class="btn ghost" data-action="edit-name">Change Name</button>';
+
+    return ''
+    + '<div class="panel">'
+      + '<div class="panel-title">Hunter Profile</div>'
+      + '<div class="settings-row">'
+        + '<div><div class="srow-label">Display Name</div><div class="srow-sub">'+esc(profile.name)+'</div></div>'
+        + nameBlock
+      + '</div>'
+      + '<div class="settings-row">'
+        + '<div><div class="srow-label">Account</div><div class="srow-sub">'+esc((acc&&(acc.email||acc.name))||'Signed in')+'</div></div>'
+        + '<button class="btn ghost" data-action="switch-account">Change Account</button>'
+      + '</div>'
+    + '</div>'
+    + '<div class="panel">'
+      + '<div class="panel-title">System Theme</div>'
+      + '<div class="settings-row" style="border-bottom:none;">'
+        + '<div><div class="srow-label">Interface Color</div><div class="srow-sub">Changes the UI accent and your Hunter License to match.</div></div>'
+        + '<div class="theme-swatches">'
+          + '<button class="theme-swatch'+(theme==='blue'?' sel':'')+'" data-action="set-theme" data-theme="blue"><span class="dot dot-blue"></span>Blue</button>'
+          + '<button class="theme-swatch'+(theme==='red'?' sel':'')+'" data-action="set-theme" data-theme="red"><span class="dot dot-red"></span>Red</button>'
+          + '<button class="theme-swatch'+(theme==='green'?' sel':'')+'" data-action="set-theme" data-theme="green"><span class="dot dot-green"></span>Green</button>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  }
+
+  /* ---------------- master render ---------------- */
+  function render(){
+    const appEl = document.getElementById('app');
+
+    if(state.screen !== 'app'){
+      appEl.innerHTML = ''
+        + '<div class="topbar"><div class="brand"><div class="mark"><span>S</span></div><div><h1>THE SYSTEM</h1><div class="sub">HUNTER ACTIVITY LOG</div></div></div></div>'
+        + renderLogin();
+      return;
+    }
+
+    const tabs = ['status','quests','skills','license','portfolio','settings'];
+    const labels = {status:'Status', quests:'Daily Quest', skills:'Skills', license:'Hunter License', portfolio:'Digital Resume', settings:'Settings'};
+    let body = '';
+    if(state.tab==='status') body = renderStatus();
+    else if(state.tab==='quests') body = renderQuests();
+    else if(state.tab==='skills') body = renderSkills();
+    else if(state.tab==='license') body = renderLicense();
+    else if(state.tab==='portfolio') body = renderPortfolio();
+    else if(state.tab==='settings') body = renderSettings();
+
+    appEl.innerHTML = ''
+      + '<div class="topbar">'
+        + '<div class="brand"><div class="mark"><span>S</span></div><div><h1>THE SYSTEM</h1><div class="sub">HUNTER ACTIVITY LOG</div></div></div>'
+        + '<div class="topbar-right">'
+          + '<div class="tabs">' + tabs.map(t=>'<button class="tab'+(state.tab===t?' active':'')+'" data-tab="'+t+'">'+labels[t]+'</button>').join('') + '</div>'
+          + '<div class="acct-tag">◆ <b>'+esc(profile.name)+'</b></div>'
+        + '</div>'
+      + '</div>'
+      + body
+      + '<footer class="note">Saved to your profile automatically — come back anytime and your progress is right where you left it.</footer>';
+
+    if(state.tab === 'license'){ requestAnimationFrame(fitCertificate); }
+  }
+
+  /* ---------------- certificate fit-to-width ----------------
+     The certificate is built at a fixed design width so its
+     proportions never distort — on small screens it's simply
+     scaled down as one whole unit, exactly like shrinking a
+     real printed certificate rather than reflowing its layout. */
+  function fitCertificate(){
+    const stage = document.getElementById('cert-stage');
+    const panel = document.getElementById('cert-panel');
+    if(!stage || !panel) return;
+    panel.style.transform = 'scale(1)';
+    const designWidth = panel.offsetWidth || 880;
+    const stageWidth = stage.clientWidth;
+    const scale = Math.min(1, stageWidth / designWidth);
+    panel.style.transform = 'scale(' + scale + ')';
+    stage.style.height = (panel.getBoundingClientRect().height) + 'px';
+  }
+  window.addEventListener('resize', function(){
+    if(state.tab === 'license') fitCertificate();
+  });
+  /* The display webfonts (Orbitron/Rajdhani/JetBrains Mono) can finish
+     loading and swap in *after* fitCertificate() already measured the
+     certificate — this happens more often on mobile/slower connections.
+     Because the fallback font is usually more compact than the real
+     one, the certificate's true height ends up taller than the frozen
+     stage height, and since the stage clips overflow, the bottom of
+     the certificate (skills/signatures/seal) got cut off. Re-fitting
+     once the fonts are actually ready fixes this without needing a
+     live observer. */
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){ if(state.tab === 'license') fitCertificate(); });
+  }
+
+  /* ---------------- account flow ---------------- */
+  async function enterAccount(id, rawName){
+    currentAccountId = id;
+    let p = await loadKey(K('profile'), null, true);
+    if(!p){
+      p = { name: rawName || id, joinDate: todayStr() };
+      await saveKey(K('profile'), p, true);
+    }
+    profile = p;
+    skills = await loadKey(K('skills'), [], true);
+    entries = await loadKey(K('entries'), [], true);
+    achievements = await loadKey(
+    K('achievements'),
+    [],
+    true
+);
+    const loadedPf = await loadKey(K('portfolio'), null, true);
+    if(!loadedPf){
+      portfolioData = defaultPortfolio();
+      portfolioData.name = profile.name;
+      portfolioData.contact.name = profile.name;
+      portfolioData.selectedSkillIds = skills.map(function(s){ return s.id; });
+    } else {
+      portfolioData = loadedPf;
+      if(!portfolioData.contact) portfolioData.contact = {name:profile.name,phone:'',github:'',email:''};
+      if(!portfolioData.extraSkills) portfolioData.extraSkills = [];
+      if(!portfolioData.selectedSkillIds) portfolioData.selectedSkillIds = [];
+      if(!portfolioData.projects) portfolioData.projects = [];
+      if(!portfolioData.color) portfolioData.color = '#4de8ff';
+      if(!portfolioData.skillCertificates) portfolioData.skillCertificates = {};
+    }
+    await saveKey('lastAccountId', id, false);
+    applyTheme(profile.theme || 'blue');
+    state.screen = 'app';
+    state.tab = 'status';
+    render();
+  }
+
+  function exitAccount(){
+    currentAccountId = null;
+    profile = null; skills = []; entries = []; portfolioData = null;
+    saveKey('lastAccountId', '', false);
+    state.screen = 'login';
+    state.tab = 'status';
+    state.pfStep = 'profile';
+    applyTheme('blue');
+    auth.signOut();
+    render();
+  }
+
+  /* ---------------- event handling ---------------- */
+  const appEl = document.getElementById('app');
+
+  appEl.addEventListener('click', function(e){
+    const tabBtn = e.target.closest('[data-tab]');
+    if(tabBtn){ state.tab = tabBtn.dataset.tab; render(); return; }
+
+    const editName = e.target.closest('[data-action="edit-name"]');
+    if(editName){ state.editingName = true; render(); return; }
+
+    const cancelEditName = e.target.closest('[data-action="cancel-edit-name"]');
+    if(cancelEditName){ state.editingName = false; render(); return; }
+
+    const toggleAch = e.target.closest('[data-action="toggle-achievements"]');
+    if(toggleAch){ state.showAllAchievements = !state.showAllAchievements; render(); return; }
+
+    const themeBtn = e.target.closest('[data-action="set-theme"]');
+    if(themeBtn){
+      const theme = themeBtn.dataset.theme;
+      profile.theme = theme;
+      applyTheme(theme);
+      saveKey(K('profile'), profile, true);
+      render();
+      return;
+    }
+
+    const showAdd = e.target.closest('[data-action="show-add-skill"]');
+    if(showAdd){ state.showAddSkill = true; render(); return; }
+
+    const cancelAdd = e.target.closest('[data-action="cancel-add-skill"]');
+    if(cancelAdd){ state.showAddSkill = false; render(); return; }
+
+    const printBtn = e.target.closest('[data-action="print"]');
+    if(printBtn){ window.print(); return; }
+
+    const switchBtn = e.target.closest('[data-action="switch-account"]');
+    if(switchBtn){ exitAccount(); return; }
+
+    const questModeBtn = e.target.closest('[data-action="quest-mode"]');
+    if(questModeBtn){ state.questMode = questModeBtn.dataset.mode; render(); return; }
+
+    const diffOpt = e.target.closest('[data-diffopt]');
+    if(diffOpt){
+      state.difficulty = diffOpt.dataset.diffopt;
+      appEl.querySelectorAll('.diff-opt').forEach(el=>el.classList.remove('sel'));
+      diffOpt.classList.add('sel');
+      const radio = diffOpt.querySelector('input'); if(radio) radio.checked = true;
+      const customWrap = document.getElementById('custom-exp-wrap');
+      if(customWrap) customWrap.style.display = state.difficulty==='custom' ? 'block' : 'none';
+      return;
+    }
+
+    /* -------- Digital Resume / Portfolio Builder -------- */
+    const pfGoto = e.target.closest('[data-action="pf-goto"]');
+    if(pfGoto){ state.pfStep = pfGoto.dataset.step; render(); return; }
+
+    const pfAddExtraSkill = e.target.closest('[data-action="pf-add-extra-skill"]');
+    if(pfAddExtraSkill){
+      const inp = document.getElementById('pf-extra-skill-input');
+      const val = inp && inp.value.trim();
+      if(val){ portfolioData.extraSkills.push({ id: uid(), name: val }); savePortfolio(); }
+      render();
+      return;
+    }
+
+    const pfRemoveExtraSkill = e.target.closest('[data-action="pf-remove-extra-skill"]');
+    if(pfRemoveExtraSkill){
+      portfolioData.extraSkills = portfolioData.extraSkills.filter(s=>s.id!==pfRemoveExtraSkill.dataset.id);
+      savePortfolio();
+      render();
+      return;
+    }
+
+    const pfRemoveProject = e.target.closest('[data-action="pf-remove-project"]');
+    if(pfRemoveProject){
+      portfolioData.projects = portfolioData.projects.filter(p=>p.id!==pfRemoveProject.dataset.id);
+      savePortfolio();
+      render();
+      return;
+    }
+
+    const pfRemoveShot = e.target.closest('[data-action="pf-remove-shot"]');
+    if(pfRemoveShot){
+      const proj = portfolioData.projects.find(p=>p.id===pfRemoveShot.dataset.pid);
+      if(proj){ proj.images.splice(parseInt(pfRemoveShot.dataset.idx,10),1); savePortfolio(); }
+      render();
+      return;
+    }
+
+    const pfRemoveCertImage = e.target.closest('[data-action="pf-remove-cert-image"]');
+    if(pfRemoveCertImage){
+      getOrCreateCert(pfRemoveCertImage.dataset.skillId).image = null;
+      savePortfolio();
+      render();
+      return;
+    }
+
+    const pfSetColor = e.target.closest('[data-action="pf-set-color"]');
+    if(pfSetColor){
+      portfolioData.color = pfSetColor.dataset.color;
+      savePortfolio();
+      render();
+      return;
+    }
+
+    const pfDownload = e.target.closest('[data-action="pf-download"]');
+    if(pfDownload){ downloadPortfolio(); return; }
+  });
+
+  appEl.addEventListener('change', async function(e){
+    const t = e.target;
+
+    if(t.id === 'pf-photo-input'){
+      const file = t.files && t.files[0];
+      if(!file) return;
+      const dataUrl = await fileToDataURL(file, 320, 0.8);
+      portfolioData.profileImage = dataUrl;
+      await savePortfolio();
+      render();
+      return;
+    }
+
+    if(t.dataset && t.dataset.role === 'pf-project-shots'){
+      const pid = t.dataset.pid;
+      const proj = portfolioData.projects.find(p=>p.id===pid);
+      if(!proj || !t.files || !t.files.length) return;
+      const urls = await Promise.all(Array.from(t.files).map(f=>fileToDataURL(f, 640, 0.72)));
+      proj.images.push.apply(proj.images, urls);
+      await savePortfolio();
+      render();
+      return;
+    }
+
+    if(t.id === 'pf-custom-color'){
+      portfolioData.color = t.value;
+      savePortfolio();
+      render();
+      return;
+    }
+
+    if(t.dataset && t.dataset.role === 'pf-cert-image'){
+      const skillId = t.dataset.skillId;
+      const file = t.files && t.files[0];
+      if(!skillId || !file) return;
+      const dataUrl = await fileToDataURL(file, 480, 0.75);
+      getOrCreateCert(skillId).image = dataUrl;
+      await savePortfolio();
+      render();
+      return;
+    }
+
+    if(t.dataset && t.dataset.certField){
+      const skillId = t.dataset.skillId;
+      if(!skillId) return;
+      getOrCreateCert(skillId)[t.dataset.certField] = t.value.trim();
+      await savePortfolio();
+      render();
+      return;
+    }
+  });
+
+  appEl.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const form = e.target;
+
+    if(form.id === 'name-form'){
+      const val = form.elements['name'].value.trim();
+      if(val){ profile.name = val; await saveKey(K('profile'), profile, true); }
+      state.editingName = false;
+      render();
+      return;
+    }
+
+    if(form.id === 'skill-form'){
+      const name = form.elements['name'].value.trim();
+      const category = form.elements['category'].value.trim();
+      if(!name) return;
+      const exists = skills.some(s=>s.name.toLowerCase()===name.toLowerCase());
+      if(exists){ toast('SYSTEM','You already have this skill.'); return; }
+      skills.push({ id: uid(), name, category, totalExp: 0, createdAt: todayStr() });
+      await saveKey(K('skills'), skills, true);
+      await checkAchievements();
+      state.showAddSkill = false;
+      toast('SKILL ACQUIRED', name+' has joined your Skill Tree.');
+      render();
+      return;
+    }
+
+    if(form.id === 'journal-form'){
+      const text = form.elements['text'].value.trim();
+      if(!text) return;
+      entries.push({ id: uid(), date: todayStr(), skillId: null, skillName: 'Journal', description: text, exp: 0, difficulty: 'journal', type: 'journal' });
+      await saveKey(K('entries'), entries, true);
+      toast('ENTRY SAVED', 'Your journal entry has been recorded.', 'violet');
+      form.reset();
+      render();
+      return;
+    }
+
+    if(form.id === 'quest-form'){
+      const skillId = form.elements['skillId'].value;
+      const description = form.elements['description'].value.trim();
+      const difficulty = state.difficulty;
+      if(!description) return;
+      let exp = DIFF[difficulty] ? DIFF[difficulty].exp : 30;
+      if(difficulty === 'custom'){
+        const v = parseInt(form.elements['customExp'].value, 10);
+        exp = (isNaN(v) || v<1) ? 10 : Math.min(v,500);
+      }
+      const sk = skills.find(s=>s.id===skillId);
+      if(!sk) return;
+
+      const beforeOverall = overall();
+      const beforeSkillLv = levelFromExp(sk.totalExp).level;
+
+      sk.totalExp += exp;
+      entries.push({ id: uid(), date: todayStr(), skillId: sk.id, skillName: sk.name, description, exp, difficulty, type:'skill' });
+
+      await saveKey(K('skills'), skills, true);
+      await saveKey(K('entries'), entries, true);
+      await checkAchievements();
+
+      const today = todayXP();
+
+if(
+    today >= state.dailyGoal &&
+    today-exp < state.dailyGoal
+){
+
+    toast(
+        "MISSION COMPLETE",
+        "Daily XP Goal Completed!",
+        "gold"
+    );
+
+}
+
+      const afterOverall = overall();
+      const afterSkillLv = levelFromExp(sk.totalExp).level;
+
+      toast('QUEST COMPLETE', '+'+exp+' XP — '+sk.name);
+      if(afterSkillLv > beforeSkillLv){ toast('LEVEL UP', sk.name+' reached Level '+afterSkillLv+'!'); }
+      if(afterOverall.rank.name !== beforeOverall.rank.name){
+        toast('RANK UP', 'You have become '+afterOverall.rank.name+'!', 'gold');
+      }
+
+      form.reset();
+      state.difficulty = 'normal';
+      render();
+      return;
+    }
+
+    if(form.id === 'pf-profile-form'){
+      portfolioData.name = form.elements['name'].value.trim() || profile.name;
+      portfolioData.tagline = form.elements['tagline'].value.trim();
+      await savePortfolio();
+      state.pfStep = 'about';
+      render();
+      return;
+    }
+
+    if(form.id === 'pf-about-form'){
+      portfolioData.about = form.elements['about'].value.trim();
+      await savePortfolio();
+      state.pfStep = 'skills';
+      render();
+      return;
+    }
+
+    if(form.id === 'pf-skills-form'){
+      const checked = Array.from(form.querySelectorAll('input[name="skill"]:checked')).map(el=>el.value);
+      portfolioData.selectedSkillIds = checked;
+      await savePortfolio();
+      state.pfStep = 'projects';
+      render();
+      return;
+    }
+
+    if(form.id === 'pf-project-form'){
+      const title = form.elements['title'].value.trim();
+      const desc = form.elements['desc'].value.trim();
+      const fileInput = form.elements['shots'];
+      if(!title) return;
+      let images = [];
+      if(fileInput && fileInput.files && fileInput.files.length){
+        images = await Promise.all(Array.from(fileInput.files).map(f=>fileToDataURL(f, 640, 0.72)));
+      }
+      portfolioData.projects.push({ id: uid(), title, desc, images });
+      await savePortfolio();
+      toast('PROJECT ADDED', title, 'violet');
+      form.reset();
+      render();
+      return;
+    }
+
+    if(form.id === 'pf-contact-form'){
+      portfolioData.contact = {
+        name: form.elements['name'].value.trim(),
+        phone: form.elements['phone'].value.trim(),
+        github: form.elements['github'].value.trim(),
+        email: form.elements['email'].value.trim()
+      };
+      await savePortfolio();
+      state.pfStep = 'theme';
+      render();
+      return;
+    }
+  });
+
+  /* ---------------- boot ---------------- */
+  async function boot(){
+    applyTheme('blue');
+    accounts = await loadKey('accounts_registry', [], true);
+    state.screen = "login";
+    render();
+
+    // Keep the user signed in on this device/browser until they explicitly log out.
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+    // Firebase fires this once on load with the restored session (if any),
+    // and again any time sign-in/sign-out happens.
+    auth.onAuthStateChanged(async function(user){
+      if(user){
+        const id = user.uid;
+        let acc = accounts.find(a=>a.id===id);
+        const name = user.displayName || user.email || 'Hunter';
+        if(!acc){
+          acc = { id, name, email: user.email || null, createdAt: todayStr() };
+          accounts.push(acc);
+          await saveKey('accounts_registry', accounts, true);
+        }
+        if(currentAccountId !== id){
+          await enterAccount(acc.id, acc.name);
+        }
+      } else {
+        currentAccountId = null;
+        profile = null; skills = []; entries = [];
+        state.screen = 'login';
+        state.tab = 'status';
+        render();
+      }
+    });
+  }
+
+document.addEventListener("click",async function(e){
+
+    if(e.target.id==="googleSignIn"){
+
+        try{
+
+            const provider = new firebase.auth.GoogleAuthProvider();
+            await auth.signInWithPopup(provider);
+            // onAuthStateChanged above handles entering the account.
+
+        }catch(err){
+
+            toast(
+                "Error",
+                err.message,
+                "gold"
+            );
+
+        }
+
+    }
+
+});
+  boot();
+})();
+</script>
+</body>
+</html>
